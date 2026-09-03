@@ -36,8 +36,7 @@ export default function LoginScreen() {
     }
 
     try {
-      // Tukar URL dengan IP komputer anda jika guna Expo Go fizikal
-      const response = await fetch('http://<IP_KOMPUTER_ANDA>:5000/api/login', {
+      const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -63,7 +62,7 @@ export default function LoginScreen() {
         <StatusBar style="light" />
         <View style={styles.splashLogoContainer}>
           <Image 
-            source={require('../assets/23FFA459-E9E2-4192-A51B-734...png')} 
+            source={require('../assets/23FFA459-E9E2-4192-A51B-734CD6319EC1.png')} 
             style={styles.splashLogoImage} 
             resizeMode="contain"
           />
@@ -85,7 +84,7 @@ export default function LoginScreen() {
         <View style={styles.headerContainer}>
           <View style={styles.smallLogoBox}>
             <Image 
-              source={require('../assets/23FFA459-E9E2-4192-A51B-734...png')} 
+              source={require('../assets/23FFA459-E9E2-4192-A51B-734CD6319EC1.png')} 
               style={styles.smallLogoImage} 
               resizeMode="contain"
             />
