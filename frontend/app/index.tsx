@@ -78,15 +78,13 @@ export default function LoginScreen() {
         style={styles.innerContainer}
       >
         <View style={styles.headerContainer}>
-          <View style={styles.smallLogoBox}>
+          <View style={styles.centerLogoBox}>
             <Image 
               source={require('../assets/23FFA459-E9E2-4192-A51B-734CD6319EC1.png')} 
-              style={styles.smallLogoImage} 
+              style={styles.centerLogoImage} 
               resizeMode="contain"
             />
           </View>
-          <Text style={styles.welcomeText}>Hai, Aina 👋</Text>
-          <Text style={styles.subWelcomeText}>Selamat datang kembali! Sila log masuk.</Text>
         </View>
 
         <View style={styles.formContainer}>
@@ -151,7 +149,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   splashContainer: { 
     flex: 1, 
-    backgroundColor: '#66B2FF', // Kod warna biru cair dan cerah
+    backgroundColor: '#66B2FF', 
     alignItems: 'center', 
     justifyContent: 'center',
     padding: 20
@@ -164,11 +162,22 @@ const styles = StyleSheet.create({
   },
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
-  headerContainer: { marginTop: 30 },
-  smallLogoBox: { width: 60, height: 60, borderRadius: 16, backgroundColor: '#EBF3FF', alignItems: 'center', justifyContent: 'center', marginBottom: 16, overflow: 'hidden' },
-  smallLogoImage: { width: 45, height: 45 },
-  welcomeText: { fontSize: 24, fontWeight: 'bold', color: '#1A1A1A' },
-  subWelcomeText: { fontSize: 14, color: '#666666', marginTop: 6 },
+  headerContainer: { alignItems: 'center', marginTop: 20 },
+  centerLogoBox: { 
+    width: 90, 
+    height: 90, 
+    borderRadius: 22, 
+    backgroundColor: '#EBF3FF', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2
+  },
+  centerLogoImage: { width: 70, height: 70 },
   formContainer: { marginVertical: 10 },
   inputGroup: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: '#333333', marginBottom: 8 },
