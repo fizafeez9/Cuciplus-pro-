@@ -55,7 +55,7 @@ export default function LoginScreen() {
     }
   };
 
-  // 1. PAPARAN SPLASH SCREEN (Biru lebih cair/terang & Logo penuh)
+  // 1. PAPARAN SPLASH SCREEN
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
@@ -162,22 +162,22 @@ const styles = StyleSheet.create({
   },
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
-  headerContainer: { alignItems: 'center', marginTop: 20 },
+  headerContainer: { alignItems: 'center', marginTop: 10 },
   centerLogoBox: { 
-    width: 90, 
-    height: 90, 
-    borderRadius: 22, 
-    backgroundColor: '#EBF3FF', 
+    width: 140, 
+    height: 140, 
+    borderRadius: 30, 
+    backgroundColor: '#F5F9FF', 
     alignItems: 'center', 
     justifyContent: 'center', 
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 3
   },
-  centerLogoImage: { width: 70, height: 70 },
+  centerLogoImage: { width: 110, height: 110 },
   formContainer: { marginVertical: 10 },
   inputGroup: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: '#333333', marginBottom: 8 },
