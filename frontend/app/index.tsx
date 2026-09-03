@@ -55,20 +55,16 @@ export default function LoginScreen() {
     }
   };
 
-  // 1. PAPARAN SPLASH SCREEN
+  // 1. PAPARAN SPLASH SCREEN (Logo Penuh, Tanpa Teks, Biru Cair & Terang)
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
         <StatusBar style="light" />
-        <View style={styles.splashLogoContainer}>
-          <Image 
-            source={require('../assets/23FFA459-E9E2-4192-A51B-734CD6319EC1.png')} 
-            style={styles.splashLogoImage} 
-            resizeMode="contain"
-          />
-          <Text style={styles.splashTitle}>CUCIplus PRO</Text>
-          <Text style={styles.splashSubtitle}>Bersih Menyeluruh & Segar</Text>
-        </View>
+        <Image 
+          source={require('../assets/23FFA459-E9E2-4192-A51B-734CD6319EC1.png')} 
+          style={styles.splashLogoImage} 
+          resizeMode="contain"
+        />
       </View>
     );
   }
@@ -153,11 +149,19 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  splashContainer: { flex: 1, backgroundColor: '#0052CC', alignItems: 'center', justifyContent: 'center' },
-  splashLogoContainer: { alignItems: 'center' },
-  splashLogoImage: { width: 120, height: 120, marginBottom: 20 },
-  splashTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 1 },
-  splashSubtitle: { fontSize: 14, color: '#E0E0E0', marginTop: 8 },
+  splashContainer: { 
+    flex: 1, 
+    backgroundColor: '#3399FF', // Biru cair dan terang
+    alignItems: 'center', 
+    justifyContent: 'center',
+    padding: 20
+  },
+  splashLogoImage: { 
+    width: '80%', 
+    height: '80%', 
+    maxWidth: 300, 
+    maxHeight: 300 
+  },
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
   headerContainer: { marginTop: 30 },
