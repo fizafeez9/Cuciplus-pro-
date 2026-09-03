@@ -20,11 +20,11 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
 
-  // Simulasikan Splash Screen selama 2 saat
+  // Simulasikan Splash Screen selama 4 saat
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 2000);
+    }, 4000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -55,7 +55,7 @@ export default function LoginScreen() {
     }
   };
 
-  // 1. PAPARAN SPLASH SCREEN (Logo Penuh, Tanpa Teks, Biru Cair & Terang)
+  // 1. PAPARAN SPLASH SCREEN (Biru lebih cair/terang & Logo penuh)
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
@@ -151,16 +151,16 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   splashContainer: { 
     flex: 1, 
-    backgroundColor: '#3399FF', // Biru cair dan terang
+    backgroundColor: '#66B2FF', // Kod warna biru cair dan cerah
     alignItems: 'center', 
     justifyContent: 'center',
     padding: 20
   },
   splashLogoImage: { 
-    width: '80%', 
-    height: '80%', 
-    maxWidth: 300, 
-    maxHeight: 300 
+    width: '85%', 
+    height: '85%', 
+    maxWidth: 320, 
+    maxHeight: 320 
   },
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
