@@ -164,7 +164,7 @@ export default function OrderScreen() {
     });
   };
 
-  // Fungsi Apabila Tempahan Disahkan
+    // Fungsi Apabila Tempahan Disahkan
   const handleConfirmBooking = () => {
     const newBooking = {
       id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
@@ -176,6 +176,11 @@ export default function OrderScreen() {
 
     setMyBookings([newBooking, ...myBookings]);
     setBookingModalVisible(false);
+    
+    // Pastikan 3 baris ini ada:
+    setPromoCodeInput('');
+    setAppliedPromo(null);
+    setPromoMessage('');
 
     Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat.');
   };
