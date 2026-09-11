@@ -25,55 +25,23 @@ export default function LoginScreen() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 4000);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async () => {
-    console.log("Butang dihantar, status isRegistering:", isRegistering);
-
+  const handleSubmit = () => {
     if (!email || !password || (isRegistering && !name)) {
       Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
       return;
     }
 
-    const endpoint = isRegistering 
-      ? 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/register' 
-      : 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/login';
-
-    const payload = isRegistering ? { name, email, password } : { email, password };
-
-    try {
-      console.log('Menghantar data ke:', endpoint);
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-      
-      const data = await response.json();
-      console.log('Respons server:', data);
-
-      if (response.ok && data.success) {
-        Alert.alert(
-          'Berjaya', 
-          isRegistering ? 'Pendaftaran berjaya! Sila log masuk.' : `Selamat datang kembali, ${data.user.name}!`
-        );
-        if (isRegistering) {
-          setIsRegistering(false);
-          setName('');
-          setPassword('');
-        }
-      } else {
-        Alert.alert('Gagal', data.message || 'Terdapat ralat pada pelayan.');
-      }
-      
-    } catch (error) {
-      console.log('Ralat Fetch:', error);
-      Alert.alert('Ralat Sambungan', `Gagal berhubung dengan backend: ${error.message}`);
+    // Simulasi Berjaya Terus untuk Preview telefon
+    if (isRegistering) {
+      Alert.alert('Berjaya', 'Pendaftaran berjaya! Sila log masuk.', [
+        { text: 'OK', onPress: () => setIsRegistering(false) }
+      ]);
+    } else {
+      Alert.alert('Berjaya', `Selamat datang kembali, ${email}!`);
     }
   };
 
