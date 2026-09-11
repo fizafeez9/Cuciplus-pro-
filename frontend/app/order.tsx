@@ -20,7 +20,7 @@ export default function OrderScreen() {
   const [unitType, setUnitType] = useState('Rumah');
   const [includeEquipment, setIncludeEquipment] = useState(false);
   const [selectedDate, setSelectedDate] = useState(2);
-  const [startHour, setStartHour] = useState(9); // Default mula pukul 9 AM
+  const [startHour, setStartHour] = useState(9); // Default mula 9 AM
 
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
@@ -106,9 +106,18 @@ export default function OrderScreen() {
     return dates;
   };
 
-  // Senarai pilihan waktu mula (9 AM hingga 1 PM)
+  // Senarai pilihan waktu mula mengikut pakej (Dinamik)
   const renderTimeSlots = () => {
-    const slots = [9, 10, 11, 12, 13]; // 9am, 10am, 11am, 12pm, 1pm
+    let maxStartHour = 15; // Default 3:00 PM untuk 2 jam & 4 jam
+    if (selectedPackage === 'complete') {
+      maxStartHour = 13; // Pakej 5 jam maksimum mula pukul 1:00 PM (13:00) sahaja
+    }
+
+    let slots = [];
+    for (let h = 9; h <= maxStartHour; h++) {
+      slots.push(h);
+    }
+
     return slots.map((hour) => {
       const isSelected = startHour === hour;
       const period = hour >= 12 ? 'PM' : 'AM';
@@ -403,7 +412,7 @@ export default function OrderScreen() {
               
               <Text style={styles.fieldLabel}>1. Pilih Pakej Servis</Text>
               
-              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'basic' && styles.packageBoxActive]} onPress={() => setSelectedPackage('basic')}>
+              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'basic' && styles.packageBoxActive]} onPress={() => { setSelectedPackage('basic'); setStartHour(9); }}>
                 <View style={styles.packageHeaderRow}>
                   <Text style={styles.packageName}>🟢 BASIC CLEAN</Text>
                   <Text style={styles.packagePrice}>RM120</Text>
@@ -411,7 +420,7 @@ export default function OrderScreen() {
                 <Text style={styles.packageDesc}>• 2 cleaners • 2 hours • Vacuum, Mop, Dusting, Kitchen & Bathroom basic</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'deep' && styles.packageBoxActive]} onPress={() => setSelectedPackage('deep')}>
+              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'deep' && styles.packageBoxActive]} onPress={() => { setSelectedPackage('deep'); setStartHour(9); }}>
                 <View style={styles.packageHeaderRow}>
                   <Text style={styles.packageName}>🔵 DEEP CLEAN</Text>
                   <Text style={styles.packagePrice}>RM280</Text>
@@ -419,7 +428,7 @@ export default function OrderScreen() {
                 <Text style={styles.packageDesc}>• 2 cleaners • 4 hours • Semua Basic, Kitchen/Bathroom deep, Doors, Skirting</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'complete' && styles.packageBoxActive]} onPress={() => setSelectedPackage('complete')}>
+              <TouchableOpacity style={[styles.packageBox, selectedPackage === 'complete' && styles.packageBoxActive]} onPress={() => { setSelectedPackage('complete'); setStartHour(9); }}>
                 <View style={styles.packageHeaderRow}>
                   <Text style={styles.packageName}>🟣 COMPLETE HOME RESET</Text>
                   <Text style={styles.packagePrice}>RM450</Text>
@@ -432,7 +441,7 @@ export default function OrderScreen() {
                 {renderDates()}
               </ScrollView>
 
-              {/* 3. PILIHAN WAKTU MULA & AUTO MASA TAMAT */}
+              {/* 3. PILIHAN WAKTU MULA DINAMIK (Pakej 5 jam maksimum mula pukul 1 PM) */}
               <Text style={styles.fieldLabel}>3. Pilih Waktu Mula Servis</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {renderTimeSlots()}
