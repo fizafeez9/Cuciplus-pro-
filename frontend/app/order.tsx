@@ -21,7 +21,7 @@ export default function OrderScreen() {
   const [includeEquipment, setIncludeEquipment] = useState(false);
   const [selectedDate, setSelectedDate] = useState(2);
 
-  // State Senarai Tempahan Aktif (Bermula kosong [] supaya tiada kad statik)
+  // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
 
   // Data Notifikasi
@@ -100,11 +100,29 @@ export default function OrderScreen() {
       price: `RM ${calculateTotal()}`
     };
 
-    // Masukkan tempahan baharu ke dalam senarai
     setMyBookings([newBooking, ...myBookings]);
     setBookingModalVisible(false);
 
-    Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat dan dipaparkan di skrin utama.');
+    Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat.');
+  };
+
+  // Fungsi Batalkan Tempahan
+  const handleCancelBooking = (bookingId) => {
+    Alert.alert(
+      'Batalkan Tempahan',
+      'Adakah anda pasti mahu membatalkan tempahan ini?',
+      [
+        { text: 'Tidak', style: 'cancel' },
+        { 
+          text: 'Ya, Batal', 
+          style: 'destructive',
+          onPress: () => {
+            setMyBookings(prev => prev.filter(item => item.id !== bookingId));
+            Alert.alert('Berjaya', 'Tempahan telah dibatalkan.');
+          }
+        }
+      ]
+    );
   };
 
   return (
@@ -228,7 +246,7 @@ export default function OrderScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Senarai Tempahan Saya (Dinamik) */}
+        {/* Senarai Tempahan Saya (Dinamik dengan Butang Batal) */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Tempahan Saya</Text>
           <TouchableOpacity>
@@ -264,11 +282,23 @@ export default function OrderScreen() {
                   </View>
                 </View>
               </View>
+
               <View style={styles.orderCardBottom}>
                 <Text style={styles.orderPrice}>{item.price}</Text>
-                <TouchableOpacity style={styles.detailButton}>
-                  <Text style={styles.detailButtonText}>Lihat Butiran</Text>
-                </TouchableOpacity>
+                
+                {/* Tindakan Butang: Batal & Lihat Butiran */}
+                <View style={styles.orderButtonRow}>
+                  <TouchableOpacity 
+                    style={styles.cancelButton} 
+                    onPress={() => handleCancelBooking(item.id)}
+                  >
+                    <Text style={styles.cancelButtonText}>Batal</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity style={styles.detailButton}>
+                    <Text style={styles.detailButtonText}>Lihat Butiran</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           ))
@@ -541,7 +571,6 @@ const styles = StyleSheet.create({
   menuIconBox: { width: 52, height: 52, borderRadius: 14, backgroundColor: '#F0F4F8', justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
   menuLabel: { fontSize: 11, color: '#333', textAlign: 'center' },
   
-  // Kotak kosong bila tiada tempahan
   emptyOrderBox: {
     backgroundColor: '#FFF',
     borderRadius: 14,
@@ -579,8 +608,14 @@ const styles = StyleSheet.create({
   orderDetailText: { fontSize: 12, color: '#666', marginLeft: 6 },
   orderCardBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 10 },
   orderPrice: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
+  
+  // Stail untuk kumpulan butang di kad tempahan
+  orderButtonRow: { flexDirection: 'row', alignItems: 'center' },
+  cancelButton: { borderWidth: 1, borderColor: '#FF3B30', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, marginRight: 8 },
+  cancelButtonText: { color: '#FF3B30', fontSize: 12, fontWeight: '600' },
   detailButton: { borderWidth: 1, borderColor: '#0052CC', paddingVertical: 6, paddingHorizontal: 14, borderRadius: 8 },
   detailButtonText: { color: '#0052CC', fontSize: 12, fontWeight: '600' },
+
   actionBanner: { backgroundColor: '#0052CC', borderRadius: 14, padding: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
   actionBannerLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   plusIconBox: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#FFF', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
@@ -630,7 +665,6 @@ const styles = StyleSheet.create({
   confirmBookingBtn: { backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' },
   confirmBookingText: { color: '#FFF', fontSize: 14, fontWeight: 'bold' },
 
-  // Stail Drawer & Notifikasi
   drawerOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000, flexDirection: 'row' },
   drawerContainer: { width: '75%', height: '100%', backgroundColor: '#FFFFFF', padding: 20, paddingTop: 50, justifyContent: 'space-between', zIndex: 1001 },
   notifContainer: { width: '85%', height: '100%', backgroundColor: '#FFFFFF', padding: 20, paddingTop: 50, zIndex: 1001, marginLeft: 'auto' },
@@ -643,7 +677,6 @@ const styles = StyleSheet.create({
   drawerIcon: { marginRight: 15 },
   drawerText: { fontSize: 15, fontWeight: '500', color: '#333333' },
   logoutButtonMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderTopWidth: 1, borderTopColor: '#EEEEEE', marginTop: 20 },
-  logoutTextName: { fontSize: 15, fontWeight: 'bold', color: '#FF3B30' },
   logoutTextMenu: { fontSize: 15, fontWeight: 'bold', color: '#FF3B30' },
   notifCard: { backgroundColor: '#F8FAFC', padding: 14, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   notifRead: { backgroundColor: '#FFFFFF', opacity: 0.6 },
