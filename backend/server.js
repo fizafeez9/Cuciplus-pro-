@@ -5,7 +5,12 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Accept']
+}));
+
 
 // Sambung ke MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI)
