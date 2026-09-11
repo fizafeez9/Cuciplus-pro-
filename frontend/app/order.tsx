@@ -15,6 +15,11 @@ export default function OrderScreen() {
   const [notifVisible, setNotifVisible] = useState(false);
   const [bookingModalVisible, setBookingModalVisible] = useState(false);
 
+  // State Kod Promo & Diskaun
+  const [promoCodeInput, setPromoCodeInput] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoMessage, setPromoMessage] = useState('');
+
   // State Borang Tempahan
   const [selectedPackage, setSelectedPackage] = useState('basic');
   const [unitType, setUnitType] = useState('Rumah');
@@ -79,10 +84,33 @@ export default function OrderScreen() {
     return `${formatTime(startHour)} - ${formatTime(endHour)}`;
   };
 
-  const calculateTotal = () => {
+    const getSubtotal = () => {
     let base = packages[selectedPackage].price;
     if (includeEquipment) base += 50;
     return base;
+  };
+
+  const calculateTotal = () => {
+    let sub = getSubtotal();
+    let discount = appliedPromo ? appliedPromo.discount : 0;
+    let final = sub - discount;
+    return final < 0 ? 0 : final;
+  };
+
+  const handleApplyPromo = () => {
+    const code = promoCodeInput.trim().toUpperCase();
+    const subtotal = getSubtotal();
+
+    if (code === 'CUCIJIMAT5' && subtotal >= 100) {
+      setAppliedPromo({ code: 'CUCIJIMAT5', discount: 15 });
+      setPromoMessage('Diskaun RM15 berjaya digunakan!');
+    } else if (code === 'CUCIJIMAT15' && subtotal >= 200) {
+      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 35 });
+      setPromoMessage('Diskaun VIP RM35 berjaya digunakan!');
+    } else {
+      setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi.');
+      setAppliedPromo(null);
+    }
   };
 
   // Penjanaan Tarikh (1hb dikunci/disabled)
@@ -467,7 +495,7 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
+                            <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
               <TouchableOpacity style={styles.addonCard} onPress={() => setIncludeEquipment(!includeEquipment)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.checkboxBox, includeEquipment && styles.checkboxBoxActive]}>
@@ -481,13 +509,45 @@ export default function OrderScreen() {
                 <Text style={styles.addonPrice}>+RM50</Text>
               </TouchableOpacity>
 
-              <View style={styles.summaryContainer}>
-                <View style={styles.summaryRow}>
-                  <Text style={styles.summaryTextLabel}>Jumlah Anggaran:</Text>
-                  <Text style={styles.summaryTextPrice}>RM {calculateTotal()}</Text>
+              {/* ---> 3. KOTAK KOD PROMO LETAK SINI <--- */}
+              <Text style={styles.fieldLabel}>6. Kod Promo</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+                <TextInput
+                  style={{ flex: 1, backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, marginRight: 8, fontSize: 13, color: '#333' }}
+                  placeholder="Cth: CUCIJIMAT5"
+                  placeholderTextColor="#999"
+                  value={promoCodeInput}
+                  onChangeText={setPromoCodeInput}
+                  autoCapitalize="characters"
+                />
+                <TouchableOpacity style={{ backgroundColor: '#0052CC', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8 }} onPress={handleApplyPromo}>
+                  <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 13 }}>Guna</Text>
+                </TouchableOpacity>
+              </View>
+              {promoMessage !== '' && (
+                <Text style={{ fontSize: 11, marginBottom: 6, fontWeight: '500', color: appliedPromo ? '#16A34A' : '#DC2626' }}>
+                  {promoMessage}
+                </Text>
+              )}
+
+              {/* ---> 4. RINGKASAN HARGA BARU (SUBTOTAL & DISKAUN) <--- */}
+              <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 12 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <Text style={{ fontSize: 13, color: '#666' }}>Subtotal:</Text>
+                  <Text style={{ fontSize: 13, fontWeight: '600', color: '#333' }}>RM {getSubtotal()}</Text>
                 </View>
-                <TouchableOpacity style={styles.confirmBookingBtn} onPress={handleConfirmBooking}>
-                  <Text style={styles.confirmBookingText}>Sahkan Tempahan Sekarang</Text>
+                {appliedPromo && (
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 13, color: '#16A34A' }}>Diskaun ({appliedPromo.code}):</Text>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: '#16A34A' }}>- RM {appliedPromo.discount}</Text>
+                  </View>
+                )}
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10, marginTop: 4 }}>
+                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>Jumlah Anggaran:</Text>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0052CC' }}>RM {calculateTotal()}</Text>
+                </View>
+                <TouchableOpacity style={{ backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' }} onPress={handleConfirmBooking}>
+                  <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>Sahkan Tempahan Sekarang</Text>
                 </TouchableOpacity>
               </View>
 
