@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image, Modal, FlatList } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -8,10 +8,45 @@ export default function OrderScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   
-  // State untuk mengawal buka/tutup menu sisi (drawer)
+  // State untuk kawalan menu sisi (drawer) & modal notifikasi
   const [menuVisible, setMenuVisible] = useState(false);
-  
-  // Mengambil nama yang digunakan semasa log masuk, jika tiada guna 'Pengguna'
+  const [notifVisible, setNotifVisible] = useState(false);
+
+  // Data Senarai Notifikasi & Baucar
+  const [notifications, setNotifications] = useState([
+    {
+      id: '1',
+      title: 'Selamat Datang! 🎉',
+      desc: 'Selamat datang ke CuciPlusPro, mulakan tempahan pembersihan terbaik dari CuciPlusPro.',
+      time: 'Baru sahaja',
+      read: false,
+    },
+    {
+      id: '2',
+      title: 'Baucar Diskaun Pertama 🏷️',
+      desc: 'Nikmati penjimatan untuk tempahan pertama anda. Gunakan kod: CUCIJIMAT5 untuk tempahan RM100 ke atas.',
+      time: '1 hari lalu',
+      read: false,
+    },
+    {
+      id: '3',
+      title: 'Diskaun Eksklusif VIP 🌟',
+      desc: 'Nikmati penjimatan besar untuk tempahan menyeluruh. Gunakan kod: CUCIJIMAT15 untuk tempahan RM200 ke atas.',
+      time: '2 hari lalu',
+      read: false,
+    }
+  ]);
+
+  // Kira bilangan notifikasi yang belum dibaca
+  const unreadCount = notifications.filter(item => !item.read).length;
+
+  // Fungsi apabila notifikasi ditekan (tanda telah dibaca)
+  const handleMarkAsRead = (id) => {
+    setNotifications(prev => 
+      prev.map(item => item.id === id ? { ...item, read: true } : item)
+    );
+  };
+
   const userName = params.name || 'Pengguna';
 
   return (
@@ -37,11 +72,14 @@ export default function OrderScreen() {
               resizeMode="contain"
             />
           </View>
-          <TouchableOpacity style={styles.notificationBtn}>
+          {/* Ikon Loceng dengan Badge Dinamik */}
+          <TouchableOpacity style={styles.notificationBtn} onPress={() => setNotifVisible(true)}>
             <Ionicons name="notifications-outline" size={24} color="#333" />
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>3</Text>
-            </View>
+            {unreadCount > 0 && (
+              <View style={styles.badge}>
+                <Text style={styles.badgeText}>{unreadCount}</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
       </View>
@@ -211,11 +249,53 @@ export default function OrderScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Modal / Paparan Senarai Notifikasi */}
+      {notifVisible && (
+        <View style={styles.drawerOverlay}>
+          <View style={styles.notifContainer}>
+            {/* Header Notifikasi */}
+            <View style={styles.drawerHeader}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="notifications" size={20} color="#0052CC" style={{ marginRight: 8 }} />
+                <Text style={styles.drawerTitle}>Notifikasi & Baucar</Text>
+              </View>
+              <TouchableOpacity onPress={() => setNotifVisible(false)}>
+                <Ionicons name="close-outline" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Senarai Pesanan Notifikasi */}
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
+              {notifications.map((item) => (
+                <TouchableOpacity 
+                  key={item.id} 
+                  style={[styles.notifCard, item.read && styles.notifRead]}
+                  onPress={() => handleMarkAsRead(item.id)}
+                >
+                  <View style={styles.notifCardTop}>
+                    <Text style={styles.notifTitle}>{item.title}</Text>
+                    {!item.read && <View style={styles.unreadDot} />}
+                  </View>
+                  <Text style={styles.notifDesc}>{item.desc}</Text>
+                  <Text style={styles.notifTime}>{item.time}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Latar Belakang Gelap */}
+          <TouchableOpacity 
+            style={styles.drawerBackdrop} 
+            activeOpacity={1} 
+            onPress={() => setNotifVisible(false)} 
+          />
+        </View>
+      )}
+
       {/* Menu Sisi (Drawer Overlay) */}
       {menuVisible && (
         <View style={styles.drawerOverlay}>
           <View style={styles.drawerContainer}>
-            {/* Header Menu Sisi */}
             <View style={styles.drawerHeader}>
               <View>
                 <Text style={styles.drawerTitle}>Menu Utama</Text>
@@ -226,7 +306,6 @@ export default function OrderScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Senarai Pilihan Menu */}
             <View style={styles.drawerBody}>
               <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
                 <Ionicons name="person-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
@@ -249,12 +328,11 @@ export default function OrderScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Butang Log Keluar di Bawah */}
             <TouchableOpacity 
               style={styles.logoutButtonMenu} 
               onPress={() => {
                 setMenuVisible(false);
-                router.replace('/'); // Kembali ke skrin log masuk
+                router.replace('/');
               }}
             >
               <Ionicons name="log-out-outline" size={20} color="#FF3B30" style={styles.drawerIcon} />
@@ -262,7 +340,6 @@ export default function OrderScreen() {
             </TouchableOpacity>
           </View>
           
-          {/* Latar belakang gelap lutsinar */}
           <TouchableOpacity 
             style={styles.drawerBackdrop} 
             activeOpacity={1} 
@@ -295,7 +372,7 @@ const styles = StyleSheet.create({
   logoBox: { width: 36, height: 36, borderRadius: 8, backgroundColor: '#F0F4F8', justifyContent: 'center', alignItems: 'center', marginRight: 12, overflow: 'hidden' },
   logoImage: { width: 30, height: 30 },
   notificationBtn: { position: 'relative', padding: 4 },
-  badge: { position: 'absolute', top: 2, right: 2, backgroundColor: '#0052CC', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+  badge: { position: 'absolute', top: 2, right: 2, backgroundColor: '#FF3B30', width: 16, height: 16, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
   badgeText: { color: '#FFF', fontSize: 10, fontWeight: 'bold' },
   scrollContent: { paddingBottom: 90, paddingHorizontal: 16, paddingTop: 12 },
   bannerContainer: { 
@@ -352,7 +429,8 @@ const styles = StyleSheet.create({
   navItemCenter: { alignItems: 'center', justifyContent: 'center', flex: 1, top: -14 },
   navAddBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#0052CC', justifyContent: 'center', alignItems: 'center', shadowColor: '#0052CC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 5 },
   navTextCenter: { fontSize: 10, color: '#0052CC', fontWeight: 'bold', marginTop: 2 },
-  // Staya untuk Menu Sisi (Drawer)
+  
+  // Staya untuk Menu Sisi & Notifikasi Overlay
   drawerOverlay: {
     position: 'absolute',
     top: 0,
@@ -370,11 +448,15 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     justifyContent: 'space-between',
     zIndex: 1001,
-    shadowColor: '#000',
-    shadowOffset: { width: 2, height: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 5,
+  },
+  notifContainer: {
+    width: '85%',
+    height: '100%',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    paddingTop: 50,
+    zIndex: 1001,
+    marginLeft: 'auto', // Muncul dari sebelah kanan
   },
   drawerBackdrop: {
     flex: 1,
@@ -430,4 +512,44 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FF3B30',
   },
+  // Stail kad notifikasi
+  notifCard: {
+    backgroundColor: '#F8FAFC',
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  notifRead: {
+    backgroundColor: '#FFFFFF',
+    opacity: 0.6,
+  },
+  notifCardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  notifTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF3B30',
+  },
+  notifDesc: {
+    fontSize: 13,
+    color: '#4B5563',
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  notifTime: {
+    fontSize: 11,
+    color: '#9CA3AF',
+  }
 });
