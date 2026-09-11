@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Sambung ke MongoDB menggunakan URI daripada fail .env yang anda baru buat
+// Sambung ke MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log('MongoDB Berjaya Disambungkan ke Cluster0!'))
 .catch(err => console.log('Ralat Sambungan MongoDB:', err));
@@ -38,4 +38,3 @@ app.post('/api/login', async (req, res) => {
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server backend berjalan di port ${PORT}`));
-
