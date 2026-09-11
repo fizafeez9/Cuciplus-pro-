@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image, Modal, Alert } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image, Modal, Alert, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -106,24 +106,31 @@ export default function OrderScreen() {
     Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat.');
   };
 
-  // Fungsi Batalkan Tempahan
+    // Fungsi Batalkan Tempahan Terus Hilang
   const handleCancelBooking = (bookingId) => {
-    Alert.alert(
-      'Batalkan Tempahan',
-      'Adakah anda pasti mahu membatalkan tempahan ini?',
-      [
-        { text: 'Tidak', style: 'cancel' },
-        { 
-          text: 'Ya, Batal', 
-          style: 'destructive',
-          onPress: () => {
-            setMyBookings(prev => prev.filter(item => item.id !== bookingId));
-            Alert.alert('Berjaya', 'Tempahan telah dibatalkan.');
+    if (Platform.OS === 'web') {
+      const confirmDelete = window.confirm('Adakah anda pasti mahu membatalkan tempahan ini?');
+      if (confirmDelete) {
+        setMyBookings(prev => prev.filter(item => item.id !== bookingId));
+      }
+    } else {
+      Alert.alert(
+        'Batalkan Tempahan',
+        'Adakah anda pasti mahu membatalkan tempahan ini?',
+        [
+          { text: 'Tidak', style: 'cancel' },
+          { 
+            text: 'Ya, Batal', 
+            style: 'destructive',
+            onPress: () => {
+              setMyBookings(prev => prev.filter(item => item.id !== bookingId));
+            }
           }
-        }
-      ]
-    );
+        ]
+      );
+    }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>
