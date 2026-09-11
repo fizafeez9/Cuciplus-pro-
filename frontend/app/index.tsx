@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState('');
@@ -35,13 +37,24 @@ export default function LoginScreen() {
       return;
     }
 
-    // Simulasi Berjaya Terus untuk Preview telefon
     if (isRegistering) {
+      // Mod Daftar: Simpan nama sementara dan tukar balik ke skrin log masuk
       Alert.alert('Berjaya', 'Pendaftaran berjaya! Sila log masuk.', [
-        { text: 'OK', onPress: () => setIsRegistering(false) }
+        { 
+          text: 'OK', 
+          onPress: () => {
+            setIsRegistering(false);
+            setPassword(''); // Kosongkan kata laluan untuk keselamatan
+          } 
+        }
       ]);
     } else {
-      Alert.alert('Berjaya', `Selamat datang kembali, ${email}!`);
+      // Mod Log Masuk: Bawa terus ke halaman /order sambil bawa nama (guna nama dari input atau e-mel jika kosong)
+      const displayName = name.trim() !== '' ? name : email.split('@')[0];
+      router.push({
+        pathname: '/order',
+        params: { name: displayName }
+      });
     }
   };
 
