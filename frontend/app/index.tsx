@@ -41,10 +41,11 @@ export default function LoginScreen() {
       return;
     }
 
-    // Tentukan endpoint backend codespace port 8000
+        // Tentukan endpoint backend codespace port 8000 dengan URL yang tepat
     const endpoint = isRegistering 
-      ? 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/register' 
-      : 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/login';
+      ? 'https://humble-telegram-4qwqrrqjp9x6cj47j-8000.app.github.dev/api/register' 
+      : 'https://humble-telegram-4qwqrrqjp9x6cj47j-8000.app.github.dev/api/login';
+
 
     const payload = isRegistering ? { name, email, password } : { email, password };
 
