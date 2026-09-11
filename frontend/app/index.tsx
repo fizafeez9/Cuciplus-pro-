@@ -16,6 +16,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(true);
+  const [isRegistering, setIsRegistering] = useState(false); // Kawal paparan Login / Register
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
@@ -28,25 +30,30 @@ export default function LoginScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fungsi Sambung ke MongoDB Backend
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Ralat', 'Sila masukkan e-mel dan kata laluan.');
+  // Fungsi Hantar Data ke Backend (Log Masuk atau Daftar)
+  const handleSubmit = async () => {
+    if (!email || !password || (isRegistering && !name)) {
+      Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
       return;
     }
 
-        try {
-      const response = await fetch('http://localhost:8000/api/login', {
+    const endpoint = isRegistering ? 'http://localhost:8000/api/register' : 'http://localhost:8000/api/login';
+    const payload = isRegistering ? { name, email, password } : { email, password };
+
+    try {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify(payload)
       });
-
       
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert('Berjaya', `Selamat datang kembali, ${data.user.name}!`);
+        Alert.alert('Berjaya', isRegistering ? 'Pendaftaran berjaya! Sila log masuk.' : `Selamat datang kembali, ${data.user.name}!`);
+        if (isRegistering) {
+          setIsRegistering(false); // Lepas daftar, balik ke skrin log masuk
+        }
       } else {
         Alert.alert('Gagal', data.message);
       }
@@ -70,7 +77,7 @@ export default function LoginScreen() {
     );
   }
 
-  // 2. PAPARAN LOGIN PAGE
+  // 2. PAPARAN UTAMA (LOGIN / REGISTER)
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -89,6 +96,23 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.formContainer}>
+          {/* Medan Nama hanya muncul jika mod Daftar */}
+          {isRegistering && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Nama Penuh</Text>
+              <View style={styles.inputBox}>
+                <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="cth: Aina Zulkarnain"
+                  placeholderTextColor="#A0A0A0"
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+            </View>
+          )}
+
           <View style={styles.inputGroup}>
             <Text style={styles.label}>E-mel / Nombor Telefon</Text>
             <View style={styles.inputBox}>
@@ -126,19 +150,25 @@ export default function LoginScreen() {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.forgotPassword}>
-            <Text style={styles.forgotText}>Lupa Kata Laluan?</Text>
-          </TouchableOpacity>
+          {!isRegistering && (
+            <TouchableOpacity style={styles.forgotPassword}>
+              <Text style={styles.forgotText}>Lupa Kata Laluan?</Text>
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Log Masuk</Text>
+          <TouchableOpacity style={styles.loginButton} onPress={handleSubmit}>
+            <Text style={styles.loginButtonText}>{isRegistering ? 'Daftar Akaun' : 'Log Masuk'}</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>Belum mempunyai akaun? </Text>
-          <TouchableOpacity>
-            <Text style={styles.registerText}>Daftar Sekarang</Text>
+          <Text style={styles.footerText}>
+            {isRegistering ? 'Sudah mempunyai akaun? ' : 'Belum mempunyai akaun? '}
+          </Text>
+          <TouchableOpacity onPress={() => setIsRegistering(!isRegistering)}>
+            <Text style={styles.registerText}>
+              {isRegistering ? 'Log Masuk' : 'Daftar Sekarang'}
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -164,7 +194,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
   headerContainer: { alignItems: 'center', marginTop: 10 },
-      centerLogoBox: { 
+  centerLogoBox: { 
     width: 234, 
     height: 234, 
     borderRadius: 42, 
@@ -179,8 +209,6 @@ const styles = StyleSheet.create({
     elevation: 3
   },
   centerLogoImage: { width: 190, height: 190 },
-
-
   formContainer: { marginVertical: 10 },
   inputGroup: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: '#333333', marginBottom: 8 },
