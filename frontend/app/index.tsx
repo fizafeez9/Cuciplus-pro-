@@ -18,7 +18,7 @@ import { useRouter } from 'expo-router';
 export default function LoginScreen() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(true); // Kekalkan true kalau nak mula terus pada mod daftar
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,33 +31,69 @@ export default function LoginScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!email || !password || (isRegistering && !name.trim())) {
-      Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
+      if (Platform.OS === 'web') {
+        alert('Sila lengkapkan semua maklumat.');
+      } else {
+        Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
+      }
       return;
     }
 
-    if (isRegistering) {
-      // Mod Daftar: Berjaya daftar, beri mesej, kemudian reset borang & kembali ke skrin log masuk
-      Alert.alert('Berjaya', 'Pendaftaran berjaya! Sila log masuk.', [
-        { 
-          text: 'OK', 
-          onPress: () => {
-            setIsRegistering(false);
-            setPassword(''); 
-            // Kekalkan 'name' atau kosongkan terpulang pada keperluan, 
-            // tapi bagus dikosongkan supaya log masuk bersih.
-          } 
-        }
-      ]);
-    } else {
-      // Mod Log Masuk: Tentukan nama paparan berdasarkan input name atau e-mel
-      const displayName = name.trim() !== '' ? name.trim() : email.split('@')[0];
-      
-      router.push({
-        pathname: '/order',
-        params: { name: displayName }
+    // Tentukan endpoint backend codespace port 8000
+    const endpoint = isRegistering 
+      ? 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/register' 
+      : 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/login';
+
+    const payload = isRegistering ? { name, email, password } : { email, password };
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
+      
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        if (isRegistering) {
+          if (Platform.OS === 'web') {
+            alert('Pendaftaran berjaya! Sila log masuk.');
+          } else {
+            Alert.alert('Berjaya', 'Pendaftaran berjaya! Sila log masuk.');
+          }
+          // Selepas daftar berjaya, tukar ke mod log masuk dan kosongkan password
+          setIsRegistering(false);
+          setPassword('');
+        } else {
+          // Jika log masuk berjaya, terus masuk ke halaman order sambil bawa nama
+          const displayName = data.user?.name || name.trim() || email.split('@')[0];
+          router.push({
+            pathname: '/order',
+            params: { name: displayName }
+          });
+        }
+      } else {
+        const errorMessage = data.message || 'Terdapat ralat pada pelayan.';
+        if (Platform.OS === 'web') {
+          alert(errorMessage);
+        } else {
+          Alert.alert('Gagal', errorMessage);
+        }
+      }
+      
+    } catch (error) {
+      const connError = `Gagal berhubung dengan backend: ${error.message}`;
+      if (Platform.OS === 'web') {
+        alert(connError);
+      } else {
+        Alert.alert('Ralat Sambungan', connError);
+      }
     }
   };
 
