@@ -20,6 +20,7 @@ export default function OrderScreen() {
   const [unitType, setUnitType] = useState('Rumah');
   const [includeEquipment, setIncludeEquipment] = useState(false);
   const [selectedDate, setSelectedDate] = useState(2);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState('Pagi (9:00 AM)');
 
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
@@ -57,10 +58,11 @@ export default function OrderScreen() {
     );
   };
 
+  // Pakej beserta jumlah jam automatik
   const packages = {
-    basic: { name: 'Basic Clean', price: 120 },
-    deep: { name: 'Deep Clean', price: 280 },
-    complete: { name: 'Complete Home Reset', price: 450 }
+    basic: { name: 'Basic Clean', price: 120, hours: 2, timeText: '9:00 AM - 11:00 AM' },
+    deep: { name: 'Deep Clean', price: 280, hours: 4, timeText: '9:00 AM - 1:00 PM' },
+    complete: { name: 'Complete Home Reset', price: 450, hours: 5, timeText: '9:00 AM - 2:00 PM' }
   };
 
   const calculateTotal = () => {
@@ -96,7 +98,7 @@ export default function OrderScreen() {
       id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
       serviceName: `Cleaning ${unitType} (${packages[selectedPackage].name})`,
       date: `${selectedDate} Jun 2026`,
-      time: '10:00 AM - 1:00 PM',
+      time: packages[selectedPackage].timeText,
       price: `RM ${calculateTotal()}`
     };
 
@@ -106,7 +108,7 @@ export default function OrderScreen() {
     Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat.');
   };
 
-    // Fungsi Batalkan Tempahan Terus Hilang
+  // Fungsi Batalkan Tempahan Terus Hilang
   const handleCancelBooking = (bookingId) => {
     if (Platform.OS === 'web') {
       const confirmDelete = window.confirm('Adakah anda pasti mahu membatalkan tempahan ini?');
@@ -130,7 +132,6 @@ export default function OrderScreen() {
       );
     }
   };
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -253,7 +254,7 @@ export default function OrderScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Senarai Tempahan Saya (Dinamik dengan Butang Batal) */}
+        {/* Senarai Tempahan Saya */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Tempahan Saya</Text>
           <TouchableOpacity>
@@ -293,7 +294,6 @@ export default function OrderScreen() {
               <View style={styles.orderCardBottom}>
                 <Text style={styles.orderPrice}>{item.price}</Text>
                 
-                {/* Tindakan Butang: Batal & Lihat Butiran */}
                 <View style={styles.orderButtonRow}>
                   <TouchableOpacity 
                     style={styles.cancelButton} 
@@ -397,7 +397,17 @@ export default function OrderScreen() {
                 {renderDates()}
               </ScrollView>
 
-              <Text style={styles.fieldLabel}>3. Jenis Unit</Text>
+              {/* SEKSYEN MASA AUTOMATIK MENGIKUT PAKEJ */}
+              <Text style={styles.fieldLabel}>3. Masa Servis (Auto mengikut Pakej)</Text>
+              <View style={styles.autoTimeBox}>
+                <Ionicons name="time-outline" size={20} color="#0052CC" style={{ marginRight: 10 }} />
+                <View>
+                  <Text style={styles.autoTimeTitle}>Slot Masa: {packages[selectedPackage].timeText}</Text>
+                  <Text style={styles.autoTimeSub}>Tempoh masa (${packages[selectedPackage].hours} jam operasi bermula 9:00 AM)</Text>
+                </View>
+              </View>
+
+              <Text style={styles.fieldLabel}>4. Jenis Unit</Text>
               <View style={styles.unitTypeRow}>
                 <TouchableOpacity style={[styles.unitBtn, unitType === 'Rumah' && styles.unitBtnActive]} onPress={() => setUnitType('Rumah')}>
                   <Ionicons name="home-outline" size={18} color={unitType === 'Rumah' ? '#0052CC' : '#666'} style={{ marginRight: 6 }} />
@@ -409,7 +419,7 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               </View>
 
-              <Text style={styles.fieldLabel}>4. Tambahan (Add-on)</Text>
+              <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
               <TouchableOpacity style={styles.addonCard} onPress={() => setIncludeEquipment(!includeEquipment)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.checkboxBox, includeEquipment && styles.checkboxBoxActive]}>
@@ -616,7 +626,6 @@ const styles = StyleSheet.create({
   orderCardBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 10 },
   orderPrice: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
   
-  // Stail untuk kumpulan butang di kad tempahan
   orderButtonRow: { flexDirection: 'row', alignItems: 'center' },
   cancelButton: { borderWidth: 1, borderColor: '#FF3B30', paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8, marginRight: 8 },
   cancelButtonText: { color: '#FF3B30', fontSize: 12, fontWeight: '600' },
@@ -635,12 +644,32 @@ const styles = StyleSheet.create({
   navAddBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#0052CC', justifyContent: 'center', alignItems: 'center', shadowColor: '#0052CC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 5 },
   navTextCenter: { fontSize: 10, color: '#0052CC', fontWeight: 'bold', marginTop: 2 },
   
-  // Stail Modal Tempahan
+  // Stail Modal Tempahan & Kotak Auto Masa
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end' },
   bookingCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: '88%' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, borderBottomWidth: 1, borderBottomColor: '#F0F0F0', paddingBottom: 10 },
   modalTitle: { fontSize: 17, fontWeight: 'bold', color: '#1A1A1A' },
   fieldLabel: { fontSize: 13, fontWeight: 'bold', color: '#333', marginTop: 12, marginBottom: 6 },
+  
+  autoTimeBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0F4FF',
+    borderWidth: 1,
+    borderColor: '#D0E2FF',
+    borderRadius: 10,
+    padding: 12,
+  },
+  autoTimeTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#0052CC',
+  },
+  autoTimeSub: {
+    fontSize: 11,
+    color: '#555',
+  },
+
   packageBox: { backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 10, padding: 12, marginBottom: 8 },
   packageBoxActive: { borderColor: '#0052CC', backgroundColor: '#F0F4FF' },
   packageHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
