@@ -16,13 +16,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(false); // Kawal paparan Login / Register
+  const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [secureText, setSecureText] = useState(true);
 
-  // Simulasikan Splash Screen selama 4 saat
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -30,14 +29,14 @@ export default function LoginScreen() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fungsi Hantar Data ke Backend (Log Masuk atau Daftar)
   const handleSubmit = async () => {
+    console.log("Butang dihantar, status isRegistering:", isRegistering);
+
     if (!email || !password || (isRegistering && !name)) {
       Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
       return;
     }
 
-    // URL awam sebenar port 8000 Codespaces anda
     const endpoint = isRegistering 
       ? 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/register' 
       : 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/login';
@@ -59,9 +58,14 @@ export default function LoginScreen() {
       console.log('Respons server:', data);
 
       if (response.ok && data.success) {
-        Alert.alert('Berjaya', isRegistering ? 'Pendaftaran berjaya! Sila log masuk.' : `Selamat datang kembali, ${data.user.name}!`);
+        Alert.alert(
+          'Berjaya', 
+          isRegistering ? 'Pendaftaran berjaya! Sila log masuk.' : `Selamat datang kembali, ${data.user.name}!`
+        );
         if (isRegistering) {
-          setIsRegistering(false); // Lepas daftar, balik ke skrin log masuk
+          setIsRegistering(false);
+          setName('');
+          setPassword('');
         }
       } else {
         Alert.alert('Gagal', data.message || 'Terdapat ralat pada pelayan.');
@@ -73,7 +77,6 @@ export default function LoginScreen() {
     }
   };
 
-  // 1. PAPARAN SPLASH SCREEN
   if (isLoading) {
     return (
       <View style={styles.splashContainer}>
@@ -87,7 +90,6 @@ export default function LoginScreen() {
     );
   }
 
-  // 2. PAPARAN UTAMA (LOGIN / REGISTER)
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
@@ -106,7 +108,6 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.formContainer}>
-          {/* Medan Nama hanya muncul jika mod Daftar */}
           {isRegistering && (
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Nama Penuh</Text>
