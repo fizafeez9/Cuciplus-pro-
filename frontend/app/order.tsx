@@ -102,13 +102,13 @@ export default function OrderScreen() {
     const subtotal = getSubtotal();
 
     if (code === 'CUCIJIMAT5' && subtotal >= 100) {
-      setAppliedPromo({ code: 'CUCIJIMAT5', discount: 15 });
-      setPromoMessage('Diskaun RM15 berjaya digunakan!');
+      setAppliedPromo({ code: 'CUCIJIMAT5', discount: 5 }); // Diskaun RM5 untuk CUCIJIMAT5
+      setPromoMessage('Diskaun RM5 berjaya digunakan!');
     } else if (code === 'CUCIJIMAT15' && subtotal >= 200) {
-      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 35 });
-      setPromoMessage('Diskaun VIP RM35 berjaya digunakan!');
+      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 35 }); // Diskaun VIP untuk CUCIJIMAT15
+      setPromoMessage('Diskaun VIP berjaya digunakan!');
     } else {
-      setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi.');
+      setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi (Minimum RM100).');
       setAppliedPromo(null);
     }
   };
