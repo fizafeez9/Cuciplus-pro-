@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -7,6 +7,9 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 export default function OrderScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
+  
+  // State untuk mengawal buka/tutup menu sisi (drawer)
+  const [menuVisible, setMenuVisible] = useState(false);
   
   // Mengambil nama yang digunakan semasa log masuk, jika tiada guna 'Pengguna'
   const userName = params.name || 'Pengguna';
@@ -18,7 +21,7 @@ export default function OrderScreen() {
       {/* Header Utama */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <TouchableOpacity style={styles.menuIcon}>
+          <TouchableOpacity style={styles.menuIcon} onPress={() => setMenuVisible(true)}>
             <Ionicons name="menu-outline" size={26} color="#333" />
           </TouchableOpacity>
           <View>
@@ -207,6 +210,67 @@ export default function OrderScreen() {
           <Text style={styles.navText}>Akaun</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Menu Sisi (Drawer Overlay) */}
+      {menuVisible && (
+        <View style={styles.drawerOverlay}>
+          <View style={styles.drawerContainer}>
+            {/* Header Menu Sisi */}
+            <View style={styles.drawerHeader}>
+              <View>
+                <Text style={styles.drawerTitle}>Menu Utama</Text>
+                <Text style={styles.drawerUserSub}>Log masuk sebagai {userName}</Text>
+              </View>
+              <TouchableOpacity onPress={() => setMenuVisible(false)}>
+                <Ionicons name="close-outline" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Senarai Pilihan Menu */}
+            <View style={styles.drawerBody}>
+              <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
+                <Ionicons name="person-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
+                <Text style={styles.drawerText}>Profil Saya</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
+                <Ionicons name="calendar-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
+                <Text style={styles.drawerText}>Sejarah Tempahan</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
+                <Ionicons name="gift-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
+                <Text style={styles.drawerText}>Pakej & Promosi</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
+                <Ionicons name="help-circle-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
+                <Text style={styles.drawerText}>Bantuan & Sokongan</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Butang Log Keluar di Bawah */}
+            <TouchableOpacity 
+              style={styles.logoutButtonMenu} 
+              onPress={() => {
+                setMenuVisible(false);
+                router.replace('/'); // Kembali ke skrin log masuk
+              }}
+            >
+              <Ionicons name="log-out-outline" size={20} color="#FF3B30" style={styles.drawerIcon} />
+              <Text style={styles.logoutTextMenu}>Log Keluar</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Latar belakang gelap lutsinar */}
+          <TouchableOpacity 
+            style={styles.drawerBackdrop} 
+            activeOpacity={1} 
+            onPress={() => setMenuVisible(false)} 
+          />
+        </View>
+      )}
+
     </SafeAreaView>
   );
 }
@@ -287,5 +351,83 @@ const styles = StyleSheet.create({
   navText: { fontSize: 10, color: '#666', marginTop: 2 },
   navItemCenter: { alignItems: 'center', justifyContent: 'center', flex: 1, top: -14 },
   navAddBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#0052CC', justifyContent: 'center', alignItems: 'center', shadowColor: '#0052CC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 5 },
-  navTextCenter: { fontSize: 10, color: '#0052CC', fontWeight: 'bold', marginTop: 2 }
+  navTextCenter: { fontSize: 10, color: '#0052CC', fontWeight: 'bold', marginTop: 2 },
+  // Staya untuk Menu Sisi (Drawer)
+  drawerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+    flexDirection: 'row',
+  },
+  drawerContainer: {
+    width: '75%',
+    height: '100%',
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    paddingTop: 50,
+    justifyContent: 'space-between',
+    zIndex: 1001,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  drawerBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  drawerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F0F0F0',
+    paddingBottom: 15,
+  },
+  drawerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+  },
+  drawerUserSub: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  drawerBody: {
+    flex: 1,
+  },
+  drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F9F9F9',
+  },
+  drawerIcon: {
+    marginRight: 15,
+  },
+  drawerText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#333333',
+  },
+  logoutButtonMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: '#EEEEEE',
+    marginTop: 20,
+  },
+  logoutTextMenu: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#FF3B30',
+  },
 });
