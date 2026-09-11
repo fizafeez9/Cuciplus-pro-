@@ -20,7 +20,7 @@ export default function OrderScreen() {
   const [unitType, setUnitType] = useState('Rumah');
   const [includeEquipment, setIncludeEquipment] = useState(false);
   const [selectedDate, setSelectedDate] = useState(2);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState('Pagi (9:00 AM)');
+  const [startHour, setStartHour] = useState(9); // Default mula pukul 9 AM
 
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
@@ -58,11 +58,25 @@ export default function OrderScreen() {
     );
   };
 
-  // Pakej beserta jumlah jam automatik
+  // Pakej beserta jumlah jam operasi
   const packages = {
-    basic: { name: 'Basic Clean', price: 120, hours: 2, timeText: '9:00 AM - 11:00 AM' },
-    deep: { name: 'Deep Clean', price: 280, hours: 4, timeText: '9:00 AM - 1:00 PM' },
-    complete: { name: 'Complete Home Reset', price: 450, hours: 5, timeText: '9:00 AM - 2:00 PM' }
+    basic: { name: 'Basic Clean', price: 120, hours: 2 },
+    deep: { name: 'Deep Clean', price: 280, hours: 4 },
+    complete: { name: 'Complete Home Reset', price: 450, hours: 5 }
+  };
+
+  // Fungsi mengira masa mula & masa tamat secara dinamik
+  const getCalculatedTimeText = () => {
+    const duration = packages[selectedPackage].hours;
+    const endHour = startHour + duration;
+
+    const formatTime = (h) => {
+      const period = h >= 12 ? 'PM' : 'AM';
+      const displayHour = h > 12 ? h - 12 : h;
+      return `${displayHour}:00 ${period}`;
+    };
+
+    return `${formatTime(startHour)} - ${formatTime(endHour)}`;
   };
 
   const calculateTotal = () => {
@@ -92,13 +106,34 @@ export default function OrderScreen() {
     return dates;
   };
 
+  // Senarai pilihan waktu mula (9 AM hingga 1 PM)
+  const renderTimeSlots = () => {
+    const slots = [9, 10, 11, 12, 13]; // 9am, 10am, 11am, 12pm, 1pm
+    return slots.map((hour) => {
+      const isSelected = startHour === hour;
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const displayH = hour > 12 ? hour - 12 : hour;
+      const label = `${displayH}:00 ${period}`;
+
+      return (
+        <TouchableOpacity
+          key={hour}
+          style={[styles.timeSlotBtn, isSelected && styles.timeSlotBtnActive]}
+          onPress={() => setStartHour(hour)}
+        >
+          <Text style={[styles.timeSlotText, isSelected && styles.timeSlotTextActive]}>{label}</Text>
+        </TouchableOpacity>
+      );
+    });
+  };
+
   // Fungsi Apabila Tempahan Disahkan
   const handleConfirmBooking = () => {
     const newBooking = {
       id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
       serviceName: `Cleaning ${unitType} (${packages[selectedPackage].name})`,
       date: `${selectedDate} Jun 2026`,
-      time: packages[selectedPackage].timeText,
+      time: getCalculatedTimeText(),
       price: `RM ${calculateTotal()}`
     };
 
@@ -397,13 +432,17 @@ export default function OrderScreen() {
                 {renderDates()}
               </ScrollView>
 
-              {/* SEKSYEN MASA AUTOMATIK MENGIKUT PAKEJ */}
-              <Text style={styles.fieldLabel}>3. Masa Servis (Auto mengikut Pakej)</Text>
+              {/* 3. PILIHAN WAKTU MULA & AUTO MASA TAMAT */}
+              <Text style={styles.fieldLabel}>3. Pilih Waktu Mula Servis</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                {renderTimeSlots()}
+              </ScrollView>
+
               <View style={styles.autoTimeBox}>
                 <Ionicons name="time-outline" size={20} color="#0052CC" style={{ marginRight: 10 }} />
-                <View>
-                  <Text style={styles.autoTimeTitle}>Slot Masa: {packages[selectedPackage].timeText}</Text>
-                  <Text style={styles.autoTimeSub}>Tempoh masa (${packages[selectedPackage].hours} jam operasi bermula 9:00 AM)</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.autoTimeTitle}>Slot Terpilih: {getCalculatedTimeText()}</Text>
+                  <Text style={styles.autoTimeSub}>Tempoh pakej ini ialah {packages[selectedPackage].hours} jam.</Text>
                 </View>
               </View>
 
@@ -644,13 +683,35 @@ const styles = StyleSheet.create({
   navAddBtn: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#0052CC', justifyContent: 'center', alignItems: 'center', shadowColor: '#0052CC', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 4, elevation: 5 },
   navTextCenter: { fontSize: 10, color: '#0052CC', fontWeight: 'bold', marginTop: 2 },
   
-  // Stail Modal Tempahan & Kotak Auto Masa
+  // Stail Modal Tempahan & Slot Waktu Mula
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.5)', justifyContent: 'flex-end' },
   bookingCard: { backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, maxHeight: '88%' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14, borderBottomWidth: 1, borderBottomColor: '#F0F0F0', paddingBottom: 10 },
   modalTitle: { fontSize: 17, fontWeight: 'bold', color: '#1A1A1A' },
   fieldLabel: { fontSize: 13, fontWeight: 'bold', color: '#333', marginTop: 12, marginBottom: 6 },
   
+  timeSlotBtn: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#F1F5F9',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginRight: 8,
+  },
+  timeSlotBtnActive: {
+    backgroundColor: '#0052CC',
+    borderColor: '#0052CC',
+  },
+  timeSlotText: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  timeSlotTextActive: {
+    color: '#FFF',
+  },
+
   autoTimeBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -659,6 +720,7 @@ const styles = StyleSheet.create({
     borderColor: '#D0E2FF',
     borderRadius: 10,
     padding: 12,
+    marginTop: 8,
   },
   autoTimeTitle: {
     fontSize: 13,
