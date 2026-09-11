@@ -37,30 +37,39 @@ export default function LoginScreen() {
       return;
     }
 
-    const endpoint = isRegistering ? 'https://...-8000.app.github.dev/api/register' : 'https://...-8000.app.github.dev/api/login';
+    // URL awam sebenar port 8000 Codespaces anda
+    const endpoint = isRegistering 
+      ? 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/register' 
+      : 'https://humble-telegram-4qwqrrjp9x6cj47j-8000.app.github.dev/api/login';
 
     const payload = isRegistering ? { name, email, password } : { email, password };
 
     try {
+      console.log('Menghantar data ke:', endpoint);
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
         body: JSON.stringify(payload)
       });
       
       const data = await response.json();
+      console.log('Respons server:', data);
 
-      if (data.success) {
+      if (response.ok && data.success) {
         Alert.alert('Berjaya', isRegistering ? 'Pendaftaran berjaya! Sila log masuk.' : `Selamat datang kembali, ${data.user.name}!`);
         if (isRegistering) {
           setIsRegistering(false); // Lepas daftar, balik ke skrin log masuk
         }
       } else {
-        Alert.alert('Gagal', data.message);
+        Alert.alert('Gagal', data.message || 'Terdapat ralat pada pelayan.');
       }
       
     } catch (error) {
-      Alert.alert('Ralat Sambungan', 'Gagal berhubung dengan MongoDB backend.');
+      console.log('Ralat Fetch:', error);
+      Alert.alert('Ralat Sambungan', `Gagal berhubung dengan backend: ${error.message}`);
     }
   };
 
