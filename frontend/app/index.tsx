@@ -163,10 +163,10 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFFFFF' },
   innerContainer: { flex: 1, padding: 24, justifyContent: 'space-between' },
   headerContainer: { alignItems: 'center', marginTop: 10 },
-    centerLogoBox: { 
-    width: 180, 
-    height: 180, 
-    borderRadius: 35, 
+      centerLogoBox: { 
+    width: 234, 
+    height: 234, 
+    borderRadius: 42, 
     backgroundColor: '#F5F9FF', 
     alignItems: 'center', 
     justifyContent: 'center', 
@@ -177,7 +177,8 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3
   },
-  centerLogoImage: { width: 145, height: 145 },
+  centerLogoImage: { width: 190, height: 190 },
+
 
   formContainer: { marginVertical: 10 },
   inputGroup: { marginBottom: 16 },
