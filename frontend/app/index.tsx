@@ -32,25 +32,28 @@ export default function LoginScreen() {
   }, []);
 
   const handleSubmit = () => {
-    if (!email || !password || (isRegistering && !name)) {
+    if (!email || !password || (isRegistering && !name.trim())) {
       Alert.alert('Ralat', 'Sila lengkapkan semua maklumat.');
       return;
     }
 
     if (isRegistering) {
-      // Mod Daftar: Simpan nama sementara dan tukar balik ke skrin log masuk
+      // Mod Daftar: Berjaya daftar, beri mesej, kemudian reset borang & kembali ke skrin log masuk
       Alert.alert('Berjaya', 'Pendaftaran berjaya! Sila log masuk.', [
         { 
           text: 'OK', 
           onPress: () => {
             setIsRegistering(false);
-            setPassword(''); // Kosongkan kata laluan untuk keselamatan
+            setPassword(''); 
+            // Kekalkan 'name' atau kosongkan terpulang pada keperluan, 
+            // tapi bagus dikosongkan supaya log masuk bersih.
           } 
         }
       ]);
     } else {
-      // Mod Log Masuk: Bawa terus ke halaman /order sambil bawa nama (guna nama dari input atau e-mel jika kosong)
-      const displayName = name.trim() !== '' ? name : email.split('@')[0];
+      // Mod Log Masuk: Tentukan nama paparan berdasarkan input name atau e-mel
+      const displayName = name.trim() !== '' ? name.trim() : email.split('@')[0];
+      
       router.push({
         pathname: '/order',
         params: { name: displayName }
