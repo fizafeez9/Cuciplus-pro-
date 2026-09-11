@@ -21,6 +21,9 @@ export default function OrderScreen() {
   const [includeEquipment, setIncludeEquipment] = useState(false);
   const [selectedDate, setSelectedDate] = useState(2);
 
+  // State Senarai Tempahan Aktif (Bermula kosong [] supaya tiada kad statik)
+  const [myBookings, setMyBookings] = useState([]);
+
   // Data Notifikasi
   const [notifications, setNotifications] = useState([
     {
@@ -85,6 +88,23 @@ export default function OrderScreen() {
       );
     }
     return dates;
+  };
+
+  // Fungsi Apabila Tempahan Disahkan
+  const handleConfirmBooking = () => {
+    const newBooking = {
+      id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
+      serviceName: `Cleaning ${unitType} (${packages[selectedPackage].name})`,
+      date: `${selectedDate} Jun 2026`,
+      time: '10:00 AM - 1:00 PM',
+      price: `RM ${calculateTotal()}`
+    };
+
+    // Masukkan tempahan baharu ke dalam senarai
+    setMyBookings([newBooking, ...myBookings]);
+    setBookingModalVisible(false);
+
+    Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat dan dipaparkan di skrin utama.');
   };
 
   return (
@@ -208,7 +228,7 @@ export default function OrderScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Senarai Tempahan Saya */}
+        {/* Senarai Tempahan Saya (Dinamik) */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Tempahan Saya</Text>
           <TouchableOpacity>
@@ -216,33 +236,43 @@ export default function OrderScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.orderCard}>
-          <View style={styles.orderCardTop}>
-            <View style={styles.orderImagePlaceholder} />
-            <View style={styles.orderInfo}>
-              <View style={styles.orderStatusRow}>
-                <View style={styles.dotIndicator} />
-                <Text style={styles.statusText}>Akan Datang</Text>
-                <Text style={styles.orderId}>#CPR2505261</Text>
+        {myBookings.length === 0 ? (
+          <View style={styles.emptyOrderBox}>
+            <Ionicons name="calendar-clear-outline" size={40} color="#CBD5E1" />
+            <Text style={styles.emptyOrderText}>Belum ada sebarang tempahan aktif.</Text>
+            <Text style={styles.emptyOrderSub}>Tekan butang di bawah untuk mula menempah servis.</Text>
+          </View>
+        ) : (
+          myBookings.map((item, index) => (
+            <View key={index} style={styles.orderCard}>
+              <View style={styles.orderCardTop}>
+                <View style={styles.orderImagePlaceholder} />
+                <View style={styles.orderInfo}>
+                  <View style={styles.orderStatusRow}>
+                    <View style={styles.dotIndicator} />
+                    <Text style={styles.statusText}>Akan Datang</Text>
+                    <Text style={styles.orderId}>{item.id}</Text>
+                  </View>
+                  <Text style={styles.orderServiceName}>{item.serviceName}</Text>
+                  <View style={styles.orderDetailRow}>
+                    <Ionicons name="calendar-outline" size={14} color="#666" />
+                    <Text style={styles.orderDetailText}>{item.date}</Text>
+                  </View>
+                  <View style={styles.orderDetailRow}>
+                    <Ionicons name="time-outline" size={14} color="#666" />
+                    <Text style={styles.orderDetailText}>{item.time}</Text>
+                  </View>
+                </View>
               </View>
-              <Text style={styles.orderServiceName}>Cleaning Rumah</Text>
-              <View style={styles.orderDetailRow}>
-                <Ionicons name="calendar-outline" size={14} color="#666" />
-                <Text style={styles.orderDetailText}>25 Mei 2026 (Sabtu)</Text>
-              </View>
-              <View style={styles.orderDetailRow}>
-                <Ionicons name="time-outline" size={14} color="#666" />
-                <Text style={styles.orderDetailText}>10:00 AM - 1:00 PM</Text>
+              <View style={styles.orderCardBottom}>
+                <Text style={styles.orderPrice}>{item.price}</Text>
+                <TouchableOpacity style={styles.detailButton}>
+                  <Text style={styles.detailButtonText}>Lihat Butiran</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </View>
-          <View style={styles.orderCardBottom}>
-            <Text style={styles.orderPrice}>RM 150</Text>
-            <TouchableOpacity style={styles.detailButton}>
-              <Text style={styles.detailButtonText}>Lihat Butiran</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+          ))
+        )}
 
         {/* Butang Tindakan Pantas */}
         <TouchableOpacity style={styles.actionBanner} onPress={() => setBookingModalVisible(true)}>
@@ -286,7 +316,7 @@ export default function OrderScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* ================= MODAL TEMPAHAN (BOOKING FLOW) ================= */}
+      {/* ================= MODAL TEMPAHAN ================= */}
       <Modal animationType="slide" transparent={true} visible={bookingModalVisible} onRequestClose={() => setBookingModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.bookingCard}>
@@ -299,7 +329,6 @@ export default function OrderScreen() {
 
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
               
-              {/* Pilihan Pakej */}
               <Text style={styles.fieldLabel}>1. Pilih Pakej Servis</Text>
               
               <TouchableOpacity style={[styles.packageBox, selectedPackage === 'basic' && styles.packageBoxActive]} onPress={() => setSelectedPackage('basic')}>
@@ -326,13 +355,11 @@ export default function OrderScreen() {
                 <Text style={styles.packageDesc}>• 3 cleaners • 5 hours • Deep clean, Windows, Kitchen/Bathroom detailed, Balcony</Text>
               </TouchableOpacity>
 
-              {/* Pilihan Tarikh */}
               <Text style={styles.fieldLabel}>2. Pilih Tarikh Servis (Jun)</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {renderDates()}
               </ScrollView>
 
-              {/* Pilihan Jenis Unit */}
               <Text style={styles.fieldLabel}>3. Jenis Unit</Text>
               <View style={styles.unitTypeRow}>
                 <TouchableOpacity style={[styles.unitBtn, unitType === 'Rumah' && styles.unitBtnActive]} onPress={() => setUnitType('Rumah')}>
@@ -345,7 +372,6 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               </View>
 
-              {/* Add-on Peralatan */}
               <Text style={styles.fieldLabel}>4. Tambahan (Add-on)</Text>
               <TouchableOpacity style={styles.addonCard} onPress={() => setIncludeEquipment(!includeEquipment)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -360,16 +386,12 @@ export default function OrderScreen() {
                 <Text style={styles.addonPrice}>+RM50</Text>
               </TouchableOpacity>
 
-              {/* Ringkasan Harga & Butang */}
               <View style={styles.summaryContainer}>
                 <View style={styles.summaryRow}>
                   <Text style={styles.summaryTextLabel}>Jumlah Anggaran:</Text>
                   <Text style={styles.summaryTextPrice}>RM {calculateTotal()}</Text>
                 </View>
-                <TouchableOpacity style={styles.confirmBookingBtn} onPress={() => {
-                  Alert.alert('Tempahan Berjaya!', `Pakej: ${packages[selectedPackage].name}\nTarikh: ${selectedDate} Jun\nJumlah: RM ${calculateTotal()}`);
-                  setBookingModalVisible(false);
-                }}>
+                <TouchableOpacity style={styles.confirmBookingBtn} onPress={handleConfirmBooking}>
                   <Text style={styles.confirmBookingText}>Sahkan Tempahan Sekarang</Text>
                 </TouchableOpacity>
               </View>
@@ -518,6 +540,32 @@ const styles = StyleSheet.create({
   menuItem: { alignItems: 'center', width: '23%' },
   menuIconBox: { width: 52, height: 52, borderRadius: 14, backgroundColor: '#F0F4F8', justifyContent: 'center', alignItems: 'center', marginBottom: 6 },
   menuLabel: { fontSize: 11, color: '#333', textAlign: 'center' },
+  
+  // Kotak kosong bila tiada tempahan
+  emptyOrderBox: {
+    backgroundColor: '#FFF',
+    borderRadius: 14,
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#EAEAEA',
+    borderStyle: 'dashed'
+  },
+  emptyOrderText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#64748B',
+    marginTop: 10,
+  },
+  emptyOrderSub: {
+    fontSize: 12,
+    color: '#94A3B8',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+
   orderCard: { backgroundColor: '#FFF', borderRadius: 14, padding: 14, marginBottom: 20, borderWidth: 1, borderColor: '#EAEAEA' },
   orderCardTop: { flexDirection: 'row', marginBottom: 12 },
   orderImagePlaceholder: { width: 70, height: 70, borderRadius: 10, backgroundColor: '#DDD', marginRight: 12 },
@@ -595,6 +643,7 @@ const styles = StyleSheet.create({
   drawerIcon: { marginRight: 15 },
   drawerText: { fontSize: 15, fontWeight: '500', color: '#333333' },
   logoutButtonMenu: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, borderTopWidth: 1, borderTopColor: '#EEEEEE', marginTop: 20 },
+  logoutTextName: { fontSize: 15, fontWeight: 'bold', color: '#FF3B30' },
   logoutTextMenu: { fontSize: 15, fontWeight: 'bold', color: '#FF3B30' },
   notifCard: { backgroundColor: '#F8FAFC', padding: 14, borderRadius: 12, marginBottom: 12, borderWidth: 1, borderColor: '#E2E8F0' },
   notifRead: { backgroundColor: '#FFFFFF', opacity: 0.6 },
