@@ -37,7 +37,8 @@ export default function LoginScreen() {
       return;
     }
 
-    const endpoint = isRegistering ? 'http://localhost:8000/api/register' : 'http://localhost:8000/api/login';
+    const endpoint = isRegistering ? 'https://...-8000.app.github.dev/api/register' : 'https://...-8000.app.github.dev/api/login';
+
     const payload = isRegistering ? { name, email, password } : { email, password };
 
     try {
