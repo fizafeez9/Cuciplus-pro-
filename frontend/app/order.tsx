@@ -10,6 +10,13 @@ export default function OrderScreen() {
   
   const userName = params.name || 'Pengguna';
 
+  // Perlindungan Sesi: Halang akses jika tiada parameter nama / sudah log keluar
+  useEffect(() => {
+    if (!params.name) {
+      router.replace('/');
+    }
+  }, [params.name]);
+
   // State Kawalan Modal & Menu
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
@@ -30,7 +37,7 @@ export default function OrderScreen() {
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
 
-  // Auto-batal promo jika subtotal tidak mencukupi (Diletakkan di sini supaya variable di atas sudah wujud)
+  // Auto-batal promo jika subtotal tidak mencukupi
   useEffect(() => {
     const sub = getSubtotal();
     if (appliedPromo) {
