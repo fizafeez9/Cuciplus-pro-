@@ -92,6 +92,18 @@ export default function OrderScreen() {
 
   const calculateTotal = () => {
     let sub = getSubtotal();
+    
+    // Auto-decline diskaun jika subtotal tak lepas syarat minimum semasa
+    if (appliedPromo) {
+      if (appliedPromo.code === 'CUCIJIMAT15' && sub < 200) {
+        setAppliedPromo(null);
+        setPromoMessage('Kod VIP dibatalkan kerana subtotal di bawah RM200.');
+      } else if (appliedPromo.code === 'CUCIJIMAT5' && sub < 100) {
+        setAppliedPromo(null);
+        setPromoMessage('Kod promo dibatalkan kerana subtotal di bawah RM100.');
+      }
+    }
+
     let discount = appliedPromo ? appliedPromo.discount : 0;
     let final = sub - discount;
     return final < 0 ? 0 : final;
