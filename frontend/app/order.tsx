@@ -20,7 +20,17 @@ export default function OrderScreen() {
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoMessage, setPromoMessage] = useState('');
 
-  // Auto-batal promo jika subtotal tidak mencukupi
+  // State Borang Tempahan
+  const [selectedPackage, setSelectedPackage] = useState('basic');
+  const [unitType, setUnitType] = useState('Rumah');
+  const [includeEquipment, setIncludeEquipment] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(2);
+  const [startHour, setStartHour] = useState(9); // Default mula 9 AM
+
+  // State Senarai Tempahan Aktif
+  const [myBookings, setMyBookings] = useState([]);
+
+  // Auto-batal promo jika subtotal tidak mencukupi (Diletakkan di sini supaya variable di atas sudah wujud)
   useEffect(() => {
     const sub = getSubtotal();
     if (appliedPromo) {
@@ -33,16 +43,6 @@ export default function OrderScreen() {
       }
     }
   }, [selectedPackage, includeEquipment]);
-
-  // State Borang Tempahan
-  const [selectedPackage, setSelectedPackage] = useState('basic');
-  const [unitType, setUnitType] = useState('Rumah');
-  const [includeEquipment, setIncludeEquipment] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(2);
-  const [startHour, setStartHour] = useState(9); // Default mula 9 AM
-
-  // State Senarai Tempahan Aktif
-  const [myBookings, setMyBookings] = useState([]);
 
   // Data Notifikasi
   const [notifications, setNotifications] = useState([
