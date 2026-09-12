@@ -105,7 +105,7 @@ export default function OrderScreen() {
       setAppliedPromo({ code: 'CUCIJIMAT5', discount: 5 }); // Diskaun RM5 untuk CUCIJIMAT5
       setPromoMessage('Diskaun RM5 berjaya digunakan!');
     } else if (code === 'CUCIJIMAT15' && subtotal >= 200) {
-      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 35 }); // Diskaun VIP untuk CUCIJIMAT15
+      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 15 }); // Diskaun VIP untuk CUCIJIMAT15
       setPromoMessage('Diskaun VIP berjaya digunakan!');
     } else {
       setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi (Minimum RM100).');
