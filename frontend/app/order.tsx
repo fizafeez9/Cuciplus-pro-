@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Image, Modal, Alert, Platform, TextInput } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -19,6 +19,20 @@ export default function OrderScreen() {
   const [promoCodeInput, setPromoCodeInput] = useState('');
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoMessage, setPromoMessage] = useState('');
+
+  // Auto-batal promo jika subtotal tidak mencukupi
+  useEffect(() => {
+    const sub = getSubtotal();
+    if (appliedPromo) {
+      if (appliedPromo.code === 'CUCIJIMAT15' && sub < 200) {
+        setAppliedPromo(null);
+        setPromoMessage('Kod VIP dibatalkan kerana subtotal di bawah RM200.');
+      } else if (appliedPromo.code === 'CUCIJIMAT5' && sub < 100) {
+        setAppliedPromo(null);
+        setPromoMessage('Kod promo dibatalkan kerana subtotal di bawah RM100.');
+      }
+    }
+  }, [selectedPackage, includeEquipment]);
 
   // State Borang Tempahan
   const [selectedPackage, setSelectedPackage] = useState('basic');
@@ -90,20 +104,9 @@ export default function OrderScreen() {
     return base;
   };
 
+    // --- calculateTotal (Kekalkan bersih tanpa setState di dalam) ---
   const calculateTotal = () => {
     let sub = getSubtotal();
-    
-    // Auto-decline diskaun jika subtotal tak lepas syarat minimum semasa
-    if (appliedPromo) {
-      if (appliedPromo.code === 'CUCIJIMAT15' && sub < 200) {
-        setAppliedPromo(null);
-        setPromoMessage('Kod VIP dibatalkan kerana subtotal di bawah RM200.');
-      } else if (appliedPromo.code === 'CUCIJIMAT5' && sub < 100) {
-        setAppliedPromo(null);
-        setPromoMessage('Kod promo dibatalkan kerana subtotal di bawah RM100.');
-      }
-    }
-
     let discount = appliedPromo ? appliedPromo.discount : 0;
     let final = sub - discount;
     return final < 0 ? 0 : final;
