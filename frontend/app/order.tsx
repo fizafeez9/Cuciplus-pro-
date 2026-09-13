@@ -788,8 +788,8 @@ export default function OrderScreen() {
                   <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0052CC' }}>RM {calculateCarpetTotal()}</Text>
                 </View>
                 <TouchableOpacity style={{ backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' }} onPress={() => {
-                  if (!selectedCarpetCategory) {
-                    Alert.alert('Perhatian', 'Sila pilih jenis karpet terlebih dahulu sebelum meneruskan tempahan.');
+                  if (selectedCarpetCategory !== 'unknown' && getCarpetSqft() <= 0) {
+                    Alert.alert('Perhatian', 'Sila masukkan saiz panjang dan lebar karpet (sqft) dengan betul.');
                     return;
                   }
 
