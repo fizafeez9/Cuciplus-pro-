@@ -624,6 +624,143 @@ export default function OrderScreen() {
           </View>
         </View>
       </Modal>
+      
+      {/* ================= MODAL KHAS CLEANING KARPET ================= */}
+      <Modal animationType="slide" transparent={true} visible={carpetModalVisible} onRequestClose={() => setCarpetModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.bookingCard}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Tempahan Cleaning Karpet</Text>
+              <TouchableOpacity onPress={() => setCarpetModalVisible(false)}>
+                <Ionicons name="close-circle" size={28} color="#999" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 20 }}>
+              
+              <Text style={styles.fieldLabel}>1. Tempat / Kategori Karpet</Text>
+              <View style={styles.unitTypeRow}>
+                <TouchableOpacity style={[styles.unitBtn, carpetType === 'rumah' && styles.unitBtnActive]} onPress={() => { setCarpetType('rumah'); setSelectedCarpetCategory('synthetic'); }}>
+                  <Text style={[styles.unitBtnText, carpetType === 'rumah' && styles.unitBtnTextActive]}>Karpet Rumah</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.unitBtn, carpetType === 'pejabat' && styles.unitBtnActive]} onPress={() => { setCarpetType('pejabat'); setSelectedCarpetCategory('standard_office'); }}>
+                  <Text style={[styles.unitBtnText, carpetType === 'pejabat' && styles.unitBtnTextActive]}>Karpet Pejabat</Text>
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.fieldLabel}>2. Jenis Karpet</Text>
+              {carpetType === 'rumah' ? (
+                <>
+                  <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'synthetic' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('synthetic')}>
+                    <Text style={styles.packageName}>Synthetic / Karpet Biasa (RM1.20 / sqft)</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'shaggy' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('shaggy')}>
+                    <Text style={styles.packageName}>Shaggy / High Pile (RM1.50 / sqft)</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'wool' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('wool')}>
+                    <Text style={styles.packageName}>Wool (RM2.00 / sqft)</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'persian' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('persian')}>
+                    <Text style={styles.packageName}>Persian / Handmade (RM3.00 / sqft)</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'unknown' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('unknown')}>
+                    <Text style={styles.packageName}>Tak Pasti (RM40 Booking Fee)</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity style={[styles.packageBox, selectedCarpetCategory === 'standard_office' && styles.packageBoxActive]} onPress={() => setSelectedCarpetCategory('standard_office')}>
+                  <Text style={styles.packageName}>Standard Office Carpet (RM0.60 / sqft)</Text>
+                </TouchableOpacity>
+              )}
+
+              {selectedCarpetCategory !== 'unknown' && (
+                <>
+                  <Text style={styles.fieldLabel}>3. Saiz Karpet (Kaki / ft)</Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                    <TextInput
+                      style={{ flex: 1, backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, marginRight: 8, color: '#333' }}
+                      placeholder="Panjang (ft)"
+                      placeholderTextColor="#999"
+                      keyboardType="numeric"
+                      value={carpetLength}
+                      onChangeText={setCarpetLength}
+                    />
+                    <Text style={{ marginRight: 8, fontWeight: 'bold', color: '#333' }}>×</Text>
+                    <TextInput
+                      style={{ flex: 1, backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, color: '#333' }}
+                      placeholder="Lebar (ft)"
+                      placeholderTextColor="#999"
+                      keyboardType="numeric"
+                      value={carpetWidth}
+                      onChangeText={setCarpetWidth}
+                    />
+                  </View>
+                  <Text style={{ fontSize: 12, color: '#0052CC', fontWeight: 'bold', marginBottom: 10 }}>
+                    Jumlah Keluasan: {getCarpetSqft()} sqft
+                  </Text>
+                </>
+              )}
+
+              <Text style={styles.fieldLabel}>4. Tambahan (Add-on)</Text>
+              {carpetType === 'rumah' ? (
+                <>
+                  {[
+                    { id: 'stain', label: 'Rawatan Kotoran (+RM30)' },
+                    { id: 'odor', label: 'Rawatan Bau (+RM30)' },
+                    { id: 'pet', label: 'Rawatan Bau/Kotoran Haiwan (+RM35)' },
+                    { id: 'pickup', label: 'Pickup & Delivery (+RM30)' }
+                  ].map((addon) => {
+                    const isSelected = selectedCarpetAddons.includes(addon.id);
+                    return (
+                      <TouchableOpacity key={addon.id} style={styles.addonCard} onPress={() => {
+                        if (isSelected) setSelectedCarpetAddons(selectedCarpetAddons.filter(id => id !== addon.id));
+                        else setSelectedCarpetAddons([...selectedCarpetAddons, addon.id]);
+                      }}>
+                        <Text style={styles.addonTitle}>{addon.label}</Text>
+                        <View style={[styles.checkboxBox, isSelected && styles.checkboxBoxActive]}>
+                          {isSelected && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </>
+              ) : (
+                <TouchableOpacity style={styles.addonCard} onPress={() => {
+                  if (selectedCarpetAddons.includes('deep_office')) setSelectedCarpetAddons(selectedCarpetAddons.filter(id => id !== 'deep_office'));
+                  else setSelectedCarpetAddons([...selectedCarpetAddons, 'deep_office']);
+                }}>
+                  <Text style={styles.addonTitle}>Deep Cleaning (+RM0.80 / sqft)</Text>
+                  <View style={[styles.checkboxBox, selectedCarpetAddons.includes('deep_office') && styles.checkboxBoxActive]}>
+                    {selectedCarpetAddons.includes('deep_office') && <Ionicons name="checkmark" size={12} color="#FFF" />}
+                  </View>
+                </TouchableOpacity>
+              )}
+
+              <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 12 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>Jumlah Anggaran:</Text>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0052CC' }}>RM {calculateCarpetTotal()}</Text>
+                </View>
+                <TouchableOpacity style={{ backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' }} onPress={() => {
+                  const newBooking = {
+                    id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
+                    serviceName: `Cleaning Karpet (${carpetType === 'rumah' ? 'Rumah' : 'Pejabat'})`,
+                    date: 'Tarikh Temujanji',
+                    time: selectedCarpetCategory === 'unknown' ? 'Tak Pasti (RM40 Booking Fee)' : `${getCarpetSqft()} sqft`,
+                    price: `RM ${calculateCarpetTotal()}`
+                  };
+                  setMyBookings([newBooking, ...myBookings]);
+                  setCarpetModalVisible(false);
+                  Alert.alert('Berjaya!', 'Tempahan karpet anda telah berjaya dibuat.');
+                }}>
+                  <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>Sahkan Tempahan Karpet</Text>
+                </TouchableOpacity>
+              </View>
+
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
       {/* Modal Notifikasi */}
       {notifVisible && (
