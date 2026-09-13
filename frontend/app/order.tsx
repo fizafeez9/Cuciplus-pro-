@@ -119,7 +119,7 @@ export default function OrderScreen() {
     return base;
   };
 
-    // --- calculateTotal (Kekalkan bersih tanpa setState di dalam) ---
+  // --- calculateTotal (Kekalkan bersih tanpa setState di dalam) ---
   const calculateTotal = () => {
     let sub = getSubtotal();
     let discount = appliedPromo ? appliedPromo.discount : 0;
@@ -141,6 +141,40 @@ export default function OrderScreen() {
       setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi (Minimum RM100).');
       setAppliedPromo(null);
     }
+  };
+
+  // Fungsi Kira Sqft Karpet
+  const getCarpetSqft = () => {
+    const l = parseFloat(carpetLength) || 0;
+    const w = parseFloat(carpetWidth) || 0;
+    return l * w;
+  };
+
+  // Fungsi Kira Total Harga Karpet
+  const calculateCarpetTotal = () => {
+    let basePrice = 0;
+    let sqft = getCarpetSqft();
+
+    if (carpetType === 'rumah') {
+      if (selectedCarpetCategory === 'synthetic') basePrice = sqft * 1.20;
+      else if (selectedCarpetCategory === 'shaggy') basePrice = sqft * 1.50;
+      else if (selectedCarpetCategory === 'wool') basePrice = sqft * 2.00;
+      else if (selectedCarpetCategory === 'persian') basePrice = sqft * 3.00;
+      else if (selectedCarpetCategory === 'unknown') basePrice = 40; // Booking fee tetap RM40
+    } else {
+      if (selectedCarpetCategory === 'standard_office') basePrice = sqft * 0.60;
+    }
+
+    // Tambah Add-on Karpet
+    selectedCarpetAddons.forEach(addon => {
+      if (addon === 'stain') basePrice += 30;
+      if (addon === 'odor') basePrice += 30;
+      if (addon === 'pet') basePrice += 35;
+      if (addon === 'pickup') basePrice += 30;
+      if (addon === 'deep_office') basePrice += sqft * 0.80;
+    });
+
+    return basePrice < 0 ? 0 : basePrice.toFixed(2);
   };
 
   // Penjanaan Tarikh (1hb dikunci/disabled)
