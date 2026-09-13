@@ -628,8 +628,7 @@ export default function OrderScreen() {
           </View>
         </View>
       </Modal>
-      
-      {/* ================= MODAL KHAS CLEANING KARPET ================= */}
+            {/* ================= MODAL KHAS CLEANING KARPET ================= */}
       <Modal animationType="slide" transparent={true} visible={carpetModalVisible} onRequestClose={() => setCarpetModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.bookingCard}>
@@ -740,6 +739,49 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               )}
 
+              {/* 5. PILIH TARIKH SERVIS */}
+              <Text style={styles.fieldLabel}>5. Pilih Tarikh Servis (Jun)</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                {/* Kita guna fungsi renderDates sedia ada, tapi sesuaikan untuk state karpet */}
+                {(() => {
+                  let dates = [];
+                  for (let i = 1; i <= 30; i++) {
+                    const isAvailable = i !== 1;
+                    const isSelected = carpetDate === i;
+                    dates.push(
+                      <TouchableOpacity 
+                        key={i} 
+                        style={[styles.dateBox, !isAvailable && styles.dateDisabled, isSelected && styles.dateSelected]}
+                        disabled={!isAvailable}
+                        onPress={() => setCarpetDate(i)}
+                      >
+                        <Text style={[styles.dateTextNum, isSelected && styles.dateTextNumSelected, !isAvailable && styles.dateTextDisabled]}>{i}</Text>
+                        <Text style={[styles.dateTextMonth, isSelected && styles.dateTextNumSelected]}>Jun</Text>
+                      </TouchableOpacity>
+                    );
+                  }
+                  return dates;
+                })()}
+              </ScrollView>
+
+              {/* 6. PILIH WAKTU MULA SERVIS */}
+              <Text style={styles.fieldLabel}>6. Pilih Waktu Mula Servis</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
+                {['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM'].map((slot) => {
+                  const isSelected = carpetTimeSlot === slot;
+                  return (
+                    <TouchableOpacity
+                      key={slot}
+                      style={[styles.timeSlotBtn, isSelected && styles.timeSlotBtnActive]}
+                      onPress={() => setCarpetTimeSlot(slot)}
+                    >
+                      <Text style={[styles.timeSlotText, isSelected && styles.timeSlotTextActive]}>{slot}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+
+              {/* Ringkasan & Sahkan */}
               <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>Jumlah Anggaran:</Text>
@@ -749,8 +791,8 @@ export default function OrderScreen() {
                   const newBooking = {
                     id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
                     serviceName: `Cleaning Karpet (${carpetType === 'rumah' ? 'Rumah' : 'Pejabat'})`,
-                    date: 'Tarikh Temujanji',
-                    time: selectedCarpetCategory === 'unknown' ? 'Tak Pasti (RM40 Booking Fee)' : `${getCarpetSqft()} sqft`,
+                    date: `${carpetDate} Jun 2026`,
+                    time: carpetTimeSlot,
                     price: `RM ${calculateCarpetTotal()}`
                   };
                   setMyBookings([newBooking, ...myBookings]);
