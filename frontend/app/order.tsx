@@ -21,6 +21,14 @@ export default function OrderScreen() {
   const [menuVisible, setMenuVisible] = useState(false);
   const [notifVisible, setNotifVisible] = useState(false);
   const [bookingModalVisible, setBookingModalVisible] = useState(false);
+  
+  // --- TAMBAH STATE KHAS KARPET DI SINI ---
+  const [carpetModalVisible, setCarpetModalVisible] = useState(false);
+  const [carpetType, setCarpetType] = useState('rumah'); // 'rumah' atau 'pejabat'
+  const [selectedCarpetCategory, setSelectedCarpetCategory] = useState('synthetic'); 
+  const [carpetLength, setCarpetLength] = useState('');
+  const [carpetWidth, setCarpetWidth] = useState('');
+  const [selectedCarpetAddons, setSelectedCarpetAddons] = useState([]);
 
   // State Kod Promo & Diskaun
   const [promoCodeInput, setPromoCodeInput] = useState('');
