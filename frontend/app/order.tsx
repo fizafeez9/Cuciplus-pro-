@@ -628,7 +628,8 @@ export default function OrderScreen() {
           </View>
         </View>
       </Modal>
-            {/* ================= MODAL KHAS CLEANING KARPET ================= */}
+            
+      {/* ================= MODAL KHAS CLEANING KARPET ================= */}
       <Modal animationType="slide" transparent={true} visible={carpetModalVisible} onRequestClose={() => setCarpetModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.bookingCard}>
@@ -742,7 +743,6 @@ export default function OrderScreen() {
               {/* 5. PILIH TARIKH SERVIS */}
               <Text style={styles.fieldLabel}>5. Pilih Tarikh Servis (Jun)</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
-                {/* Kita guna fungsi renderDates sedia ada, tapi sesuaikan untuk state karpet */}
                 {(() => {
                   let dates = [];
                   for (let i = 1; i <= 30; i++) {
@@ -788,6 +788,11 @@ export default function OrderScreen() {
                   <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0052CC' }}>RM {calculateCarpetTotal()}</Text>
                 </View>
                 <TouchableOpacity style={{ backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' }} onPress={() => {
+                  if (!selectedCarpetCategory) {
+                    Alert.alert('Perhatian', 'Sila pilih jenis karpet terlebih dahulu sebelum meneruskan tempahan.');
+                    return;
+                  }
+
                   const newBooking = {
                     id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
                     serviceName: `Cleaning Karpet (${carpetType === 'rumah' ? 'Rumah' : 'Pejabat'})`,
@@ -797,7 +802,6 @@ export default function OrderScreen() {
                   };
                   setMyBookings([newBooking, ...myBookings]);
                   setCarpetModalVisible(false);
-                  Alert.alert('Berjaya!', 'Tempahan karpet anda telah berjaya dibuat.');
                 }}>
                   <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>Sahkan Tempahan Karpet</Text>
                 </TouchableOpacity>
