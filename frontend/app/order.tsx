@@ -349,11 +349,11 @@ export default function OrderScreen() {
             <Text style={styles.quickCardPrice}>RM 200</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.quickCard} onPress={() => setBookingModalVisible(true)}>
+          <TouchableOpacity style={styles.quickCard} onPress={() => setCarpetModalVisible(true)}>
             <MaterialCommunityIcons name="rug" size={36} color="#333" />
             <Text style={styles.quickCardTitle}>Cleaning Karpet</Text>
             <Text style={styles.quickCardSub}>Dari</Text>
-            <Text style={styles.quickCardPrice}>RM 60</Text>
+            <Text style={styles.quickCardPrice}>RM 40</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.quickCard} onPress={() => setBookingModalVisible(true)}>
