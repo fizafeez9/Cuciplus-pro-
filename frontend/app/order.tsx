@@ -49,6 +49,56 @@ export default function OrderScreen() {
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
 
+  // --- LETAK KAT SINI (SEBELUM useEffect / FUNGSIAN LAIN) ---
+  const handlePickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+
+    if (permissionResult.status !== 'granted' && cameraPermission.status !== 'granted') {
+      Alert.alert('Kebenaran Ditolak', 'Kami memerlukan akses ke kamera atau galeri untuk memuat naik gambar karpet.');
+      return;
+    }
+
+    Alert.alert(
+      'Pilih Sumber Gambar',
+      'Sila pilih cara untuk memuat naik gambar karpet:',
+      [
+        {
+          text: 'Kamera',
+          onPress: async () => {
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 0.7,
+            });
+
+            if (!result.canceled) {
+              setCarpetImage(result.assets[0].uri);
+            }
+          }
+        },
+        {
+          text: 'Galeri Foto',
+          onPress: async () => {
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: ImagePicker.MediaTypeOptions.Images,
+              allowsEditing: true,
+              aspect: [4, 3],
+              quality: 0.7,
+            });
+
+            if (!result.canceled) {
+              setCarpetImage(result.assets[0].uri);
+            }
+          }
+        },
+        { text: 'Batal', style: 'cancel' }
+      ]
+    );
+  };
+
+
   // Auto-batal promo jika subtotal tidak mencukupi
   useEffect(() => {
     const sub = getSubtotal();
