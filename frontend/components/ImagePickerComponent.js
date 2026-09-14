@@ -1,56 +1,22 @@
 import React from 'react';
-import { Text, TouchableOpacity, Image, View, Alert } from 'react-native';
+import { Text, TouchableOpacity, Image, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
 
 export default function ImagePickerComponent({ carpetImage, setCarpetImage }) {
   
-  const handlePickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-
-    if (permissionResult.status !== 'granted' && cameraPermission.status !== 'granted') {
-      Alert.alert('Kebenaran Ditolak', 'Kami memerlukan akses ke kamera atau galeri untuk memuat naik gambar karpet.');
-      return;
-    }
-
-    Alert.alert(
-      'Pilih Sumber Gambar',
-      'Sila pilih cara untuk memuat naik gambar karpet:',
-      [
-        {
-          text: 'Kamera',
-          onPress: async () => {
-            const result = await ImagePicker.launchCameraAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              allowsEditing: true,
-              aspect: [4, 3],
-              quality: 0.7,
-            });
-
-            if (!result.canceled) {
-              setCarpetImage(result.assets[0].uri);
-            }
-          }
-        },
-        {
-          text: 'Galeri Foto',
-          onPress: async () => {
-            const result = await ImagePicker.launchImageLibraryAsync({
-              mediaTypes: ImagePicker.MediaTypeOptions.Images,
-              allowsEditing: true,
-              aspect: [4, 3],
-              quality: 0.7,
-            });
-
-            if (!result.canceled) {
-              setCarpetImage(result.assets[0].uri);
-            }
-          }
-        },
-        { text: 'Batal', style: 'cancel' }
-      ]
-    );
+  const handlePickImage = () => {
+    // Gunakan elemen input HTML fail yang serasi dengan mobile browser
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const imageUri = URL.createObjectURL(file);
+        setCarpetImage(imageUri);
+      }
+    };
+    input.click();
   };
 
   return (
