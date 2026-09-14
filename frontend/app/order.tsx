@@ -24,12 +24,17 @@ export default function OrderScreen() {
   
   // State Khas Modal & Borang Cleaning Karpet
   const [carpetModalVisible, setCarpetModalVisible] = useState(false);
-  const [carpetType, setCarpetType] = useState('rumah'); // 'rumah' atau 'pejabat'
+  const [carpetType, setCarpetType] = useState('rumah');
   const [selectedCarpetCategory, setSelectedCarpetCategory] = useState('synthetic'); 
   const [carpetLength, setCarpetLength] = useState('');
   const [carpetWidth, setCarpetWidth] = useState('');
   const [selectedCarpetAddons, setSelectedCarpetAddons] = useState([]);
+  const [carpetDate, setCarpetDate] = useState(2);
+  const [carpetTimeSlot, setCarpetTimeSlot] = useState('9:00 AM');
   
+  // ---> TAMBAH STATE INI <---
+  const [carpetImage, setCarpetImage] = useState(null); 
+
   // --- TAMBAH STATE TARIKH & MASA KARPET DI SINI ---
   const [carpetDate, setCarpetDate] = useState(2);
   const [carpetTimeSlot, setCarpetTimeSlot] = useState('9:00 AM');
