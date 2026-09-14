@@ -865,7 +865,7 @@ export default function OrderScreen() {
               </TouchableOpacity>
               <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
                 <Ionicons name="calendar-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
-                <Text style={styles.drawerText}>Sejarah Tempahan</Text>
+                <Text style[styles.drawerText}>Sejarah Tempahan</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.drawerItem} onPress={() => setMenuVisible(false)}>
                 <Ionicons name="gift-outline" size={20} color="#0052CC" style={styles.drawerIcon} />
