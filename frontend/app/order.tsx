@@ -682,9 +682,47 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               )}
 
+              {/* ---> BAHAGIAN BARU: UPLOAD GAMBAR KARPET <--- */}
+              <Text style={styles.fieldLabel}>3. Gambar Karpet (Wajib)</Text>
+              <TouchableOpacity 
+                style={{
+                  borderWidth: 1.5, 
+                  borderColor: carpetImage ? '#16A34A' : '#0052CC', 
+                  borderStyle: 'dashed', 
+                  borderRadius: 10, 
+                  padding: 20, 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  backgroundColor: carpetImage ? '#F0FDF4' : '#F0F4FF', 
+                  marginBottom: 16 
+                }}
+                onPress={() => {
+                  // Ini sekadar simulasi UI. (Dalam app sebenar, letak kod expo-image-picker di sini)
+                  if (!carpetImage) {
+                    setCarpetImage('berjaya_upload'); 
+                  } else {
+                    setCarpetImage(null); // Tekan lagi untuk batal/tukar
+                  }
+                }}
+              >
+                {carpetImage ? (
+                  <>
+                    <Ionicons name="checkmark-circle" size={36} color="#16A34A" />
+                    <Text style={{ fontSize: 13, color: '#16A34A', marginTop: 8, fontWeight: 'bold' }}>Gambar Telah Disertakan</Text>
+                    <Text style={{ fontSize: 11, color: '#666', marginTop: 2 }}>Tekan untuk tukar gambar lain</Text>
+                  </>
+                ) : (
+                  <>
+                    <Ionicons name="camera-outline" size={36} color="#0052CC" />
+                    <Text style={{ fontSize: 13, color: '#0052CC', marginTop: 8, fontWeight: 'bold' }}>Ambil / Muat Naik Gambar</Text>
+                    <Text style={{ fontSize: 11, color: '#666', marginTop: 2, textAlign: 'center' }}>Bantu kami sahkan jenis & kondisi sebenar karpet</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+
               {selectedCarpetCategory !== 'unknown' && (
                 <>
-                  <Text style={styles.fieldLabel}>3. Saiz Karpet (Kaki / ft)</Text>
+                  <Text style={styles.fieldLabel}>4. Saiz Karpet (Kaki / ft)</Text>
                   <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
                     <TextInput
                       style={{ flex: 1, backgroundColor: '#FAFAFA', borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, marginRight: 8, color: '#333' }}
@@ -710,7 +748,7 @@ export default function OrderScreen() {
                 </>
               )}
 
-              <Text style={styles.fieldLabel}>4. Tambahan (Add-on)</Text>
+              <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
               {carpetType === 'rumah' ? (
                 <>
                   {[
@@ -746,7 +784,7 @@ export default function OrderScreen() {
               )}
 
               {/* 5. PILIH TARIKH SERVIS */}
-              <Text style={styles.fieldLabel}>5. Pilih Tarikh Servis (Jun)</Text>
+              <Text style={styles.fieldLabel}>6. Pilih Tarikh Servis (Jun)</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {(() => {
                   let dates = [];
@@ -770,7 +808,7 @@ export default function OrderScreen() {
               </ScrollView>
 
               {/* 6. PILIH WAKTU MULA SERVIS */}
-              <Text style={styles.fieldLabel}>6. Pilih Waktu Mula Servis</Text>
+              <Text style={styles.fieldLabel}>7. Pilih Waktu Mula Servis</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM'].map((slot) => {
                   const isSelected = carpetTimeSlot === slot;
@@ -793,6 +831,11 @@ export default function OrderScreen() {
                   <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#0052CC' }}>RM {calculateCarpetTotal()}</Text>
                 </View>
                 <TouchableOpacity style={{ backgroundColor: '#0052CC', borderRadius: 10, padding: 12, alignItems: 'center' }} onPress={() => {
+                  if (!carpetImage) {
+                    Alert.alert('Perhatian', 'Sila muat naik atau ambil gambar karpet anda untuk pengesahan kami.');
+                    return;
+                  }
+
                   if (selectedCarpetCategory !== 'unknown' && getCarpetSqft() <= 0) {
                     Alert.alert('Perhatian', 'Sila masukkan saiz panjang dan lebar karpet (sqft) dengan betul.');
                     return;
@@ -807,6 +850,8 @@ export default function OrderScreen() {
                   };
                   setMyBookings([newBooking, ...myBookings]);
                   setCarpetModalVisible(false);
+                  // Set balik gambar ke null selepas tempahan berjaya dihantar
+                  setCarpetImage(null);
                 }}>
                   <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>Sahkan Tempahan Karpet</Text>
                 </TouchableOpacity>
