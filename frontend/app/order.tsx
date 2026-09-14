@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Ima
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import ImagePickerComponent from '../components/ImagePickerComponent';
+import * as ImagePicker from 'expo-image-picker'; // Diperlukan untuk kamera/galeri
 
 export default function OrderScreen() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function OrderScreen() {
   // State Senarai Tempahan Aktif
   const [myBookings, setMyBookings] = useState([]);
 
-  // --- LETAK KAT SINI (SEBELUM useEffect / FUNGSIAN LAIN) ---
+  // Fungsi Ambil Gambar / Pilih dari Galeri Sebenar
   const handlePickImage = async () => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
@@ -97,7 +97,6 @@ export default function OrderScreen() {
       ]
     );
   };
-
 
   // Auto-batal promo jika subtotal tidak mencukupi
   useEffect(() => {
@@ -173,7 +172,6 @@ export default function OrderScreen() {
     return base;
   };
 
-  // --- calculateTotal (Kekalkan bersih tanpa setState di dalam) ---
   const calculateTotal = () => {
     let sub = getSubtotal();
     let discount = appliedPromo ? appliedPromo.discount : 0;
@@ -186,10 +184,10 @@ export default function OrderScreen() {
     const subtotal = getSubtotal();
 
     if (code === 'CUCIJIMAT5' && subtotal >= 100) {
-      setAppliedPromo({ code: 'CUCIJIMAT5', discount: 5 }); // Diskaun RM5 untuk CUCIJIMAT5
+      setAppliedPromo({ code: 'CUCIJIMAT5', discount: 5 });
       setPromoMessage('Diskaun RM5 berjaya digunakan!');
     } else if (code === 'CUCIJIMAT15' && subtotal >= 200) {
-      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 15 }); // Diskaun VIP untuk CUCIJIMAT15
+      setAppliedPromo({ code: 'CUCIJIMAT15', discount: 15 });
       setPromoMessage('Diskaun VIP berjaya digunakan!');
     } else {
       setPromoMessage('Kod promo tidak sah atau minimum harga tidak mencukupi (Minimum RM100).');
@@ -214,12 +212,11 @@ export default function OrderScreen() {
       else if (selectedCarpetCategory === 'shaggy') basePrice = sqft * 1.50;
       else if (selectedCarpetCategory === 'wool') basePrice = sqft * 2.00;
       else if (selectedCarpetCategory === 'persian') basePrice = sqft * 3.00;
-      else if (selectedCarpetCategory === 'unknown') basePrice = 40; // Booking fee tetap RM40
+      else if (selectedCarpetCategory === 'unknown') basePrice = 40;
     } else {
       if (selectedCarpetCategory === 'standard_office') basePrice = sqft * 0.60;
     }
 
-    // Tambah Add-on Karpet
     selectedCarpetAddons.forEach(addon => {
       if (addon === 'stain') basePrice += 30;
       if (addon === 'odor') basePrice += 30;
@@ -252,11 +249,10 @@ export default function OrderScreen() {
     return dates;
   };
 
-  // Senarai pilihan waktu mula mengikut pakej (Dinamik)
   const renderTimeSlots = () => {
-    let maxStartHour = 15; // Default 3:00 PM untuk 2 jam & 4 jam
+    let maxStartHour = 15;
     if (selectedPackage === 'complete') {
-      maxStartHour = 13; // Pakej 5 jam maksimum mula pukul 1:00 PM (13:00) sahaja
+      maxStartHour = 13;
     }
 
     let slots = [];
@@ -282,7 +278,6 @@ export default function OrderScreen() {
     });
   };
 
-  // Fungsi Apabila Tempahan Disahkan
   const handleConfirmBooking = () => {
     const newBooking = {
       id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
@@ -302,7 +297,6 @@ export default function OrderScreen() {
     Alert.alert('Berjaya!', 'Tempahan anda telah berjaya dibuat.');
   };
 
-  // Fungsi Batalkan Tempahan Terus Hilang
   const handleCancelBooking = (bookingId) => {
     if (Platform.OS === 'web') {
       const confirmDelete = window.confirm('Adakah anda pasti mahu membatalkan tempahan ini?');
