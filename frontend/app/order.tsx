@@ -31,13 +31,7 @@ export default function OrderScreen() {
   const [selectedCarpetAddons, setSelectedCarpetAddons] = useState([]);
   const [carpetDate, setCarpetDate] = useState(2);
   const [carpetTimeSlot, setCarpetTimeSlot] = useState('9:00 AM');
-  
-  // ---> TAMBAH STATE INI <---
   const [carpetImage, setCarpetImage] = useState(null); 
-
-  // --- TAMBAH STATE TARIKH & MASA KARPET DI SINI ---
-  const [carpetDate, setCarpetDate] = useState(2);
-  const [carpetTimeSlot, setCarpetTimeSlot] = useState('9:00 AM');
 
   // State Kod Promo & Diskaun
   const [promoCodeInput, setPromoCodeInput] = useState('');
@@ -122,7 +116,7 @@ export default function OrderScreen() {
     return `${formatTime(startHour)} - ${formatTime(endHour)}`;
   };
 
-    const getSubtotal = () => {
+  const getSubtotal = () => {
     let base = packages[selectedPackage].price;
     if (includeEquipment) base += 50;
     return base;
@@ -237,7 +231,7 @@ export default function OrderScreen() {
     });
   };
 
-    // Fungsi Apabila Tempahan Disahkan
+  // Fungsi Apabila Tempahan Disahkan
   const handleConfirmBooking = () => {
     const newBooking = {
       id: '#CPR' + Math.floor(100000 + Math.random() * 900000),
@@ -250,7 +244,6 @@ export default function OrderScreen() {
     setMyBookings([newBooking, ...myBookings]);
     setBookingModalVisible(false);
     
-    // Pastikan 3 baris ini ada:
     setPromoCodeInput('');
     setAppliedPromo(null);
     setPromoMessage('');
@@ -547,7 +540,6 @@ export default function OrderScreen() {
                 {renderDates()}
               </ScrollView>
 
-              {/* 3. PILIHAN WAKTU MULA DINAMIK (Pakej 5 jam maksimum mula pukul 1 PM) */}
               <Text style={styles.fieldLabel}>3. Pilih Waktu Mula Servis</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {renderTimeSlots()}
@@ -573,7 +565,7 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               </View>
 
-                            <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
+              <Text style={styles.fieldLabel}>5. Tambahan (Add-on)</Text>
               <TouchableOpacity style={styles.addonCard} onPress={() => setIncludeEquipment(!includeEquipment)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.checkboxBox, includeEquipment && styles.checkboxBoxActive]}>
@@ -587,7 +579,6 @@ export default function OrderScreen() {
                 <Text style={styles.addonPrice}>+RM50</Text>
               </TouchableOpacity>
 
-              {/* ---> 3. KOTAK KOD PROMO LETAK SINI <--- */}
               <Text style={styles.fieldLabel}>6. Kod Promo</Text>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
                 <TextInput
@@ -608,7 +599,6 @@ export default function OrderScreen() {
                 </Text>
               )}
 
-              {/* ---> 4. RINGKASAN HARGA BARU (SUBTOTAL & DISKAUN) <--- */}
               <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 4 }}>
                   <Text style={{ fontSize: 13, color: '#666' }}>Subtotal:</Text>
@@ -633,7 +623,7 @@ export default function OrderScreen() {
           </View>
         </View>
       </Modal>
-            
+
       {/* ================= MODAL KHAS CLEANING KARPET ================= */}
       <Modal animationType="slide" transparent={true} visible={carpetModalVisible} onRequestClose={() => setCarpetModalVisible(false)}>
         <View style={styles.modalOverlay}>
@@ -682,7 +672,7 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               )}
 
-              {/* ---> BAHAGIAN BARU: UPLOAD GAMBAR KARPET <--- */}
+              {/* Gambar Karpet Wajib */}
               <Text style={styles.fieldLabel}>3. Gambar Karpet (Wajib)</Text>
               <TouchableOpacity 
                 style={{
@@ -697,11 +687,10 @@ export default function OrderScreen() {
                   marginBottom: 16 
                 }}
                 onPress={() => {
-                  // Ini sekadar simulasi UI. (Dalam app sebenar, letak kod expo-image-picker di sini)
                   if (!carpetImage) {
                     setCarpetImage('berjaya_upload'); 
                   } else {
-                    setCarpetImage(null); // Tekan lagi untuk batal/tukar
+                    setCarpetImage(null);
                   }
                 }}
               >
@@ -783,7 +772,6 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               )}
 
-              {/* 5. PILIH TARIKH SERVIS */}
               <Text style={styles.fieldLabel}>6. Pilih Tarikh Servis (Jun)</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {(() => {
@@ -807,7 +795,6 @@ export default function OrderScreen() {
                 })()}
               </ScrollView>
 
-              {/* 6. PILIH WAKTU MULA SERVIS */}
               <Text style={styles.fieldLabel}>7. Pilih Waktu Mula Servis</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 10 }}>
                 {['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '3:00 PM'].map((slot) => {
@@ -824,7 +811,6 @@ export default function OrderScreen() {
                 })}
               </ScrollView>
 
-              {/* Ringkasan & Sahkan */}
               <View style={{ marginTop: 16, borderTopWidth: 1, borderTopColor: '#E2E8F0', paddingTop: 12 }}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                   <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#333' }}>Jumlah Anggaran:</Text>
@@ -837,7 +823,7 @@ export default function OrderScreen() {
                   }
 
                   if (selectedCarpetCategory !== 'unknown' && getCarpetSqft() <= 0) {
-                    Alert.alert('Perhatian', 'Sila masukkan saiz panjang dan lebar karpet (sqft) dengan betul.');
+                    Alert.alert('Perhatian', 'Sila masukkan saiz panjang dan lebar karpet (sqft) yang sah.');
                     return;
                   }
 
@@ -850,7 +836,6 @@ export default function OrderScreen() {
                   };
                   setMyBookings([newBooking, ...myBookings]);
                   setCarpetModalVisible(false);
-                  // Set balik gambar ke null selepas tempahan berjaya dihantar
                   setCarpetImage(null);
                 }}>
                   <Text style={{ color: '#FFF', fontSize: 14, fontWeight: 'bold' }}>Sahkan Tempahan Karpet</Text>
