@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, SafeAreaView, Ima
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import ImagePickerComponent from '../components/ImagePickerComponent';
 
 export default function OrderScreen() {
   const router = useRouter();
@@ -672,7 +673,7 @@ export default function OrderScreen() {
                 </TouchableOpacity>
               )}
 
-              {/* Gambar Karpet Wajib */}
+              {/* Kotak Gambar Karpet Sebenar (Kamera / Galeri) */}
               <Text style={styles.fieldLabel}>3. Gambar Karpet (Wajib)</Text>
               <TouchableOpacity 
                 style={{
@@ -680,26 +681,19 @@ export default function OrderScreen() {
                   borderColor: carpetImage ? '#16A34A' : '#0052CC', 
                   borderStyle: 'dashed', 
                   borderRadius: 10, 
-                  padding: 20, 
+                  padding: carpetImage ? 10 : 20, 
                   alignItems: 'center', 
                   justifyContent: 'center', 
                   backgroundColor: carpetImage ? '#F0FDF4' : '#F0F4FF', 
                   marginBottom: 16 
                 }}
-                onPress={() => {
-                  if (!carpetImage) {
-                    setCarpetImage('berjaya_upload'); 
-                  } else {
-                    setCarpetImage(null);
-                  }
-                }}
+                onPress={handlePickImage}
               >
                 {carpetImage ? (
-                  <>
-                    <Ionicons name="checkmark-circle" size={36} color="#16A34A" />
-                    <Text style={{ fontSize: 13, color: '#16A34A', marginTop: 8, fontWeight: 'bold' }}>Gambar Telah Disertakan</Text>
-                    <Text style={{ fontSize: 11, color: '#666', marginTop: 2 }}>Tekan untuk tukar gambar lain</Text>
-                  </>
+                  <View style={{ alignItems: 'center', width: '100%' }}>
+                    <Image source={{ uri: carpetImage }} style={{ width: '100%', height: 140, borderRadius: 8, marginBottom: 8 }} resizeMode="cover" />
+                    <Text style={{ fontSize: 12, color: '#16A34A', fontWeight: 'bold' }}>✓ Gambar Berjaya Dimuat Naik (Tekan untuk tukar)</Text>
+                  </View>
                 ) : (
                   <>
                     <Ionicons name="camera-outline" size={36} color="#0052CC" />
